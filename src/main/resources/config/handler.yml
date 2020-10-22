@@ -93,72 +93,72 @@ chains:
     - validator
 
 paths:
-  - path: '//ticket'
+  - path: '/ticket'
     method: 'GET'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketGetHandler
-  - path: '//ticket'
+  - path: '/ticket'
     method: 'POST'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketPostHandler
-  - path: '//ticket/{ticketId}'
+  - path: '/ticket/{ticketId}'
     method: 'GET'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdGetHandler
-  - path: '//ticket/{ticketId}'
+  - path: '/ticket/{ticketId}'
     method: 'PUT'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdPutHandler
-  - path: '//ticket/{ticketId}'
+  - path: '/ticket/{ticketId}'
     method: 'POST'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdPostHandler
-  - path: '//ticket/{ticketId}'
+  - path: '/ticket/{ticketId}'
     method: 'DELETE'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdDeleteHandler
-  - path: '//ticket/{ticketId}/comment'
+  - path: '/ticket/{ticketId}/comment'
     method: 'POST'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentPostHandler
-  - path: '//ticket/{ticketId}/{commentId}'
+  - path: '/ticket/{ticketId}/{commentId}'
     method: 'PUT'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdPutHandler
-  - path: '//ticket/{ticketId}/{commentId}'
+  - path: '/ticket/{ticketId}/{commentId}'
     method: 'DELETE'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdDeleteHandler
-  - path: '//ticket/type/{ticketType}'
+  - path: '/ticket/type/{ticketType}'
     method: 'GET'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTypeTicketTypeGetHandler
-  - path: '//ticket/user/{userId}'
+  - path: '/ticket/user/{userId}'
     method: 'GET'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketUserUserIdGetHandler
-  - path: '//ticket/assignedTo/{userId}'
+  - path: '/ticket/assignedTo/{userId}'
     method: 'GET'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketAssignedToUserIdGetHandler
-  - path: '//user/phone/add'
+  - path: '/user/phone/add'
     method: 'POST'
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.UserPhoneAddPostHandler
-  - path: '//user/phone/verify'
+  - path: '/user/phone/verify'
     method: 'POST'
     exec:
       - default
