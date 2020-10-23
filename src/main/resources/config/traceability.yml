@@ -2,4 +2,4 @@
 ---
 # Indicate if this handler is enabled or not
 enabled: ${traceability.enabled:true}
-# TODO Make sure this traceability is not traceability of the users.  
+# TODO Make sure this traceability is not traceability of the users.

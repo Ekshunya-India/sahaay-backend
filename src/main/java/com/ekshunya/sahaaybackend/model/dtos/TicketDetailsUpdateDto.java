@@ -1,6 +1,7 @@
-package com.ekshunya.sahaaybackend.model;
+package com.ekshunya.sahaaybackend.model.dtos;
 
-import java.util.Arrays;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TicketDetailsUpdateDto  {
 
     private LocationDto locationDto;
-    private java.util.List<CommentDto> comments;
-    private java.time.LocalDateTime expectedEnd;
+    private List<CommentDto> comments;
+    private ZonedDateTime expectedEnd;
     private Integer visibility;
     private UserDto ticketAssignedTo;
-    private java.time.LocalDateTime actualEnd;
+    private ZonedDateTime actualEnd;
     private String description;
     private String ticketType;
     private String title;
@@ -80,11 +81,11 @@ public class TicketDetailsUpdateDto  {
     }
 
     @JsonProperty("expectedEnd")
-    public java.time.LocalDateTime getExpectedEnd() {
+    public ZonedDateTime getExpectedEnd() {
         return expectedEnd;
     }
 
-    public void setExpectedEnd(java.time.LocalDateTime expectedEnd) {
+    public void setExpectedEnd(ZonedDateTime expectedEnd) {
         this.expectedEnd = expectedEnd;
     }
 
@@ -107,11 +108,11 @@ public class TicketDetailsUpdateDto  {
     }
 
     @JsonProperty("actualEnd")
-    public java.time.LocalDateTime getActualEnd() {
+    public ZonedDateTime getActualEnd() {
         return actualEnd;
     }
 
-    public void setActualEnd(java.time.LocalDateTime actualEnd) {
+    public void setActualEnd(ZonedDateTime actualEnd) {
         this.actualEnd = actualEnd;
     }
 
