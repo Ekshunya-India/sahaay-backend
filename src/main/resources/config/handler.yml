@@ -88,7 +88,7 @@ chains:
     - security
     - body
     - audit
-#    - dump
+#    - dump  TODO : This should always be commented out.
     - sanitizer
     - validator
 

@@ -23,3 +23,5 @@ json:
   responseBody:
 #    "$.product[*].item[*].name": "(.*)"
 #    "$.product[*].item[*].name[0]": "(.*)"
+
+#TODO This needs to be looked at as to how the request can be masked for Username, Password, UserId field in Problem Type.

@@ -3,7 +3,7 @@
 # the generic validator.yml will be loaded as a fallback.
 ---
 # Enable request validation. Response validation is not done on the server but client.
-enabled: ${openapi-validator.enabled:true}
+enabled: ${openapi-validator.enabled:false} #TODO currently since this is the early stages of the project this will be kept as False. As more people join in this needs to be set to true
 # Log error message if validation error occurs
 logError: ${openapi-validator.logError:true}
 # Skip body validation set to true if used in light-router, light-proxy and light-spring-boot.
