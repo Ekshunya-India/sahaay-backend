@@ -2,6 +2,7 @@ package com.ekshunya.sahaaybackend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.networknt.handler.LightHttpHandler;
 import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
@@ -16,10 +17,12 @@ https://doc.networknt.com/development/business-handler/rest/
 */
 public class TicketGetHandler implements LightHttpHandler {
     private final ObjectMapper objectMapper;
+    private final MongoDatabase mongoDatabase;
 
     @Inject
-    public TicketGetHandler(final ObjectMapper objectMapper){
+    public TicketGetHandler(final ObjectMapper objectMapper, final MongoDatabase mongoDatabase){
         this.objectMapper = objectMapper;
+        this.mongoDatabase = mongoDatabase;
     }
 
     @Override
