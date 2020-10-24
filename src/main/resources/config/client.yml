@@ -9,7 +9,7 @@ tls:
   defaultGroupKey: ${client.defaultGroupKey:trustedNames.local}
   # trusted hostnames, service names, service Ids, and so on.
   # Note: localhost and 127.0.0.1 are not trustable hostname/ip in general. So, these values should not be used as trusted names in production.
-  ## TODO : Remove this during deploy.
+  ## TODO : Remove this during deploy or see if we should use this to whitelist some internal requests etc.
   trustedNames:
     local: localhost
     negativeTest: invalidhost 

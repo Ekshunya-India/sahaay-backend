@@ -1,6 +1,7 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.networknt.handler.LightHttpHandler;
+import io.undertow.io.Receiver;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import java.util.HashMap;
@@ -14,6 +15,12 @@ public class TicketGetHandler implements LightHttpHandler {
     
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        exchange.endExchange();
+        //This Makes the call async non blocking. We will further use mongo db stream to call the DB in an ASYNC way.
+        exchange.getRequestReceiver().receiveFullBytes(
+                (httpServerExchange, bytes) -> {
+                    //TODO add code here to call the Mongo DB.
+                    httpServerExchange.endExchange();
+                }
+        );
     }
 }
