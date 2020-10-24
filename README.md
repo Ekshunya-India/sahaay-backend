@@ -27,14 +27,15 @@ Currently the roadmap looks like the following:
 * The Input can also have file attachment &/ Url. A photo, pdf, (Other safe formats for consumption),Video and Audio can be taken for attachments.
 * Users of the App can see the help/requests/problems/stories in their Wards,District,States,All India. This can be displayed either as a List or on the map with more information.
 * Since Phone numbers are linked to the KYC of a customer in India, phone numbers can be used as a form of identification if this app is to by some bad actors to do something funny.
-* Politicians like Corporator, MLA, MP who are in twitter can be notified automatically via twitter. 
+* Politicians, Government offices and NGO's in twitter, whatsApp can be notified automatically via the corresponding API's.
 * Organizations like police, fire, Indian health ministry, Media house etc who are on twitter will also be notified via a tweet.
 * If this gets popular enough that some politicians are in it then we can send them a message directly.
 * People of the community can also vote on problems/help/requests/stories. Voting is for priority. We will have 3-4 priority throught the app.
 * Problems are listed anonymous. No data linking a user to the problem is stored at back-end. Just in the android local. The android app can have secret URL of some sorts which can be used to edit the problem. Only the User will have that URL on the android device. 
 * Action items on the tickets. Any user/groups of user can pick up the problem/request/help and work on it. After the work the users is required to provide evidence of the solution/help given to close the ticket.
+* 
 
-This will be a light4j-rest application. This will be fully Asynchornus with the use of Kotlin Coroutines.
+This will be a light4j-rest application. This will be fully Asynchornus with the use of Java Fibers. More at https://www.youtube.com/watch?v=fOEPEXTpbJA , http://jdk.java.net/loom/ and https://user-images.githubusercontent.com/5641222/97071026-c7060580-15fa-11eb-8046-d11feedb2039.png , https://user-images.githubusercontent.com/5641222/97071028-c9685f80-15fa-11eb-8a8e-15995a32ecd6.png. 
 
 * This project follows the specification [Collective Code Construction Contract](https://rfc.zeromq.org/spec/42/)
 * The corresponding android repository is present [Android App](https://github.com/sunil-kavali/sahaay-android)
