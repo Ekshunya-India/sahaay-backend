@@ -71,7 +71,6 @@ handlers:
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentPostHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdPutHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdDeleteHandler
-  - com.ekshunya.sahaaybackend.handler.TicketTypeTicketTypeGetHandler
   - com.ekshunya.sahaaybackend.handler.TicketUserUserIdGetHandler
   - com.ekshunya.sahaaybackend.handler.TicketAssignedToUserIdGetHandler
   - com.ekshunya.sahaaybackend.handler.UserPhoneAddPostHandler
@@ -138,11 +137,6 @@ paths:
     exec:
       - default
       - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdDeleteHandler
-  - path: '/ticket/type/{ticketType}'
-    method: 'GET'
-    exec:
-      - default
-      - com.ekshunya.sahaaybackend.handler.TicketTypeTicketTypeGetHandler
   - path: '/ticket/user/{userId}'
     method: 'GET'
     exec:

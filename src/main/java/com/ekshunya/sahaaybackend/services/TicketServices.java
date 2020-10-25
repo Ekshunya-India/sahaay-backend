@@ -51,4 +51,9 @@ public class TicketServices {
 		//TODO delete a Ticket in MongoDB
 		return false;
 	}
+
+	public List<TicketDto> fetchAllTicketsForUser(final String userId) {
+		//TODO implement fetchTicketsOfUsers.
+		return new ArrayList<>();
+	}
 }
