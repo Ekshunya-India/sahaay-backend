@@ -3,7 +3,7 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketUpdateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class TicketFacade {
 		return new ArrayList<>();
 	}
 
-	public TicketDto updateTicketWithUpdate(final TicketUpdateDto ticketUpdateDto) {
+	public TicketDto updateTicketWithUpdate(final TicketFeedDto ticketFeedDto) {
 		//TODO figure out how to retrive the formData
 		return null;
 	}

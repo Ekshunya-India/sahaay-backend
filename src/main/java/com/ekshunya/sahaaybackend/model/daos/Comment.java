@@ -12,4 +12,6 @@ public class Comment {
 	String comment;
 	@NotNull(message = "A Comment cannot be an orphan comment")
 	UUID userId;
+	@NotNull(message = "The Comment must be associated to some Ticket. Comment cannot be orphans")
+	UUID ticketId;
 }

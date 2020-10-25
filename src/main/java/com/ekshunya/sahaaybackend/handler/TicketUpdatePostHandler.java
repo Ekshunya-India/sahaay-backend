@@ -1,7 +1,7 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketUpdateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.ekshunya.sahaaybackend.services.TicketFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -31,8 +31,8 @@ public class TicketUpdatePostHandler implements LightHttpHandler {
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
         String ticketId = exchange.getPathParameters().get("ticketId").getFirst();
         FormData formData = exchange.getAttachment(FormDataParser.FORM_DATA);
-        TicketUpdateDto ticketUpdateDto = new TicketUpdateDto(ticketId, formData);
-        TicketDto updatedTicket = this.ticketFacade.updateTicketWithUpdate(ticketUpdateDto);
+        TicketFeedDto ticketFeedDto = new TicketFeedDto(ticketId, formData);
+        TicketDto updatedTicket = this.ticketFacade.updateTicketWithUpdate(ticketFeedDto);
         exchange.getResponseSender().send(this.objectMapper.writeValueAsString(updatedTicket));
         exchange.setStatusCode(200);
         exchange.endExchange();
