@@ -46,4 +46,9 @@ public class TicketServices {
 		//TODO figure out how to retrive the formData
 		return null;
 	}
+
+	public boolean deleteTicketWithId(final String ticketId) {
+		//TODO delete a Ticket in MongoDB
+		return false;
+	}
 }
