@@ -1,5 +1,7 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.google.inject.Inject;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 
@@ -11,4 +13,9 @@ public class TicketServices {
 		this.mongoDatabase = mongoDatabase;
 	}
 
+
+	public TicketDto createTicket(final TicketCreateDto ticketCreateDto) {
+		//TODO connect with MongoDB Ticket Collection and create the Ticket.
+		return null;
+	}
 }
