@@ -4,21 +4,17 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketUpdateDto;
-import com.google.inject.Inject;
-import com.mongodb.reactivestreams.client.MongoDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class TicketServices {
-	private final MongoDatabase mongoDatabase;
+public class TicketFacade {
+	private final TicketService ticketService;
 
-	@Inject
-	public TicketServices(final MongoDatabase mongoDatabase){
-		this.mongoDatabase = mongoDatabase;
+	public TicketFacade(final TicketService ticketService){
+		this.ticketService = ticketService;
 	}
-
 
 	public TicketDto createTicket(final TicketCreateDto ticketCreateDto) {
 		//TODO connect with MongoDB Ticket Collection and create the Ticket.

@@ -2,7 +2,7 @@ package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
-import com.ekshunya.sahaaybackend.services.TicketServices;
+import com.ekshunya.sahaaybackend.services.TicketFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.networknt.handler.LightHttpHandler;
@@ -18,12 +18,12 @@ https://doc.networknt.com/development/business-handler/rest/
 @Slf4j
 public class TicketTicketIdGetHandler implements LightHttpHandler {
     private final ObjectMapper objectMapper;
-    private final TicketServices ticketServices;
+    private final TicketFacade ticketFacade;
 
     @Inject
-    public TicketTicketIdGetHandler(final ObjectMapper objectMapper, final TicketServices ticketServices){
+    public TicketTicketIdGetHandler(final ObjectMapper objectMapper, final TicketFacade ticketFacade){
         this.objectMapper = objectMapper;
-        this.ticketServices = ticketServices;
+        this.ticketFacade = ticketFacade;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class TicketTicketIdGetHandler implements LightHttpHandler {
 
         try{
             UUID ticketId = UUID.fromString(exchange.getPathParameters().get("ticketId").getFirst());
-            TicketDto ticketDto = this.ticketServices.fetchTicketFromId(ticketId);
+            TicketDto ticketDto = this.ticketFacade.fetchTicketFromId(ticketId);
             exchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDto));
             exchange.setStatusCode(200);
         } catch (final DataNotFoundException dataNotFoundException){
