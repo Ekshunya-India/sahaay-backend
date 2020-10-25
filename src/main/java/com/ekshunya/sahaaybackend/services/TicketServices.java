@@ -3,6 +3,7 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketUpdateDto;
 import com.google.inject.Inject;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 
@@ -39,5 +40,10 @@ public class TicketServices {
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
 		return new ArrayList<>();
+	}
+
+	public TicketDto updateTicketWithUpdate(final TicketUpdateDto ticketUpdateDto) {
+		//TODO figure out how to retrive the formData
+		return null;
 	}
 }
