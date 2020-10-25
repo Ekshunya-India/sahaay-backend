@@ -1,11 +1,8 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
-import com.ekshunya.sahaaybackend.model.daos.Ticket;
-import com.ekshunya.sahaaybackend.model.daos.TicketType;
-import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
-import com.ekshunya.sahaaybackend.services.TicketServices;
+import com.ekshunya.sahaaybackend.services.TicketFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.networknt.handler.LightHttpHandler;
@@ -25,12 +22,12 @@ https://doc.networknt.com/development/business-handler/rest/
 @Slf4j
 public class TicketGetHandler implements LightHttpHandler {
     private final ObjectMapper objectMapper;
-    private final TicketServices ticketServices;
+    private final TicketFacade ticketFacade;
 
     @Inject
-    public TicketGetHandler(final ObjectMapper objectMapper, final TicketServices ticketServices){
+    public TicketGetHandler(final ObjectMapper objectMapper, final TicketFacade ticketFacade){
         this.objectMapper = objectMapper;
-        this.ticketServices = ticketServices;
+        this.ticketFacade = ticketFacade;
     }
 
     @Override
@@ -41,7 +38,7 @@ public class TicketGetHandler implements LightHttpHandler {
             String ticketType  = queryParameters.get("ticketType").getFirst();
             String latitude = queryParameters.get("latitude").getFirst();
             String longitude = queryParameters.get("longitude").getFirst();
-            List<TicketDto> ticketDtos = this.ticketServices.fetchAllTicketOfType(ticketType,latitude,longitude);
+            List<TicketDto> ticketDtos = this.ticketFacade.fetchAllTicketOfType(ticketType,latitude,longitude);
             exchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDtos));
             exchange.setStatusCode(200);
         } catch (IOException e) {
