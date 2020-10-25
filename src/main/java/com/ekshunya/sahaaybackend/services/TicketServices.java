@@ -6,6 +6,8 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.google.inject.Inject;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 
+import java.util.UUID;
+
 public class TicketServices {
 	private final MongoDatabase mongoDatabase;
 
@@ -22,6 +24,11 @@ public class TicketServices {
 
 	public TicketDto updateTicket(final TicketDetailsUpdateDto ticketDetailsUpdateDto) {
 		//TODO update the Ticket in Mongo DB using the Async Drivers. Return value might change here as Mongo might return a Publisher.
+		return null;
+	}
+
+	public TicketDto fetchTicketFromId(final UUID ticketId) {
+		//TODO get the TicketDto from MongoDB
 		return null;
 	}
 }
