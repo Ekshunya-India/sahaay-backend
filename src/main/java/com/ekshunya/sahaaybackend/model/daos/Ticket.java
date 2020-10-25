@@ -9,7 +9,8 @@ import javax.validation.constraints.PastOrPresent;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
-
+//TODO Read this and make sure that we follow the right data model for Ticket as this is the main data class
+// https://docs.mongodb.com/manual/core/data-model-design/
 @Value
 public class Ticket {
 	UUID id;

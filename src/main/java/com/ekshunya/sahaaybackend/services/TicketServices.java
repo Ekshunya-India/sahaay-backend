@@ -37,6 +37,7 @@ public class TicketServices {
 	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) {
 		//TODO do a pagination using bucket pattern in mongo DB.
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
+		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
 		return new ArrayList<>();
 	}
 }

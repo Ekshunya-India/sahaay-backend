@@ -66,7 +66,7 @@ handlers:
   - com.ekshunya.sahaaybackend.handler.TicketPostHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdGetHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdPutHandler
-  - com.ekshunya.sahaaybackend.handler.TicketTicketIdPostHandler
+  - com.ekshunya.sahaaybackend.handler.TicketUpdatePostHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdDeleteHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentPostHandler
   - com.ekshunya.sahaaybackend.handler.TicketTicketIdCommentIdPutHandler
@@ -117,7 +117,7 @@ paths:
     method: 'POST'
     exec:
       - default
-      - com.ekshunya.sahaaybackend.handler.TicketTicketIdPostHandler
+      - com.ekshunya.sahaaybackend.handler.TicketUpdatePostHandler
   - path: '/ticket/{ticketId}'
     method: 'DELETE'
     exec:

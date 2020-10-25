@@ -6,13 +6,11 @@ import com.networknt.exception.ClientException;
 import com.networknt.openapi.ResponseValidator;
 import com.networknt.schema.SchemaValidatorsConfig;
 import com.networknt.status.Status;
-import com.networknt.utility.StringUtils;
 import io.undertow.UndertowOptions;
 import io.undertow.client.ClientConnection;
 import io.undertow.client.ClientRequest;
 import io.undertow.client.ClientResponse;
 import io.undertow.util.HeaderValues;
-import io.undertow.util.HttpString;
 import io.undertow.util.Headers;
 import io.undertow.util.Methods;
 import org.junit.Assert;
@@ -30,11 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 @Ignore
-public class TicketTicketIdPostHandlerTest {
+public class TicketUpdatePostHandlerTest {
     @ClassRule
     public static TestServer server = TestServer.getInstance();
 
-    static final Logger logger = LoggerFactory.getLogger(TicketTicketIdPostHandlerTest.class);
+    static final Logger logger = LoggerFactory.getLogger(TicketUpdatePostHandlerTest.class);
     static final boolean enableHttp2 = server.getServerConfig().isEnableHttp2();
     static final boolean enableHttps = server.getServerConfig().isEnableHttps();
     static final int httpPort = server.getServerConfig().getHttpPort();
