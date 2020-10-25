@@ -4,6 +4,7 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketUpdateDto;
+import com.google.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class TicketFacade {
 	private final TicketService ticketService;
 
+	@Inject
 	public TicketFacade(final TicketService ticketService){
 		this.ticketService = ticketService;
 	}
