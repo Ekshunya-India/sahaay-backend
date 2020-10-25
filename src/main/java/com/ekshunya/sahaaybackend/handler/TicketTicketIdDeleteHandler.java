@@ -19,14 +19,11 @@ https://doc.networknt.com/development/business-handler/rest/
 */
 @Slf4j
 public class TicketTicketIdDeleteHandler implements LightHttpHandler {
-    private final ObjectMapper objectMapper;
     private final TicketServices ticketServices;
 
     @Inject
-    public TicketTicketIdDeleteHandler(final ObjectMapper objectMapper,
-                                       final TicketServices ticketServices){
+    public TicketTicketIdDeleteHandler(final TicketServices ticketServices){
         this.ticketServices = ticketServices;
-        this.objectMapper = objectMapper;
     }
 
     @Override
