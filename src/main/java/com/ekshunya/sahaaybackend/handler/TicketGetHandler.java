@@ -1,5 +1,8 @@
 package com.ekshunya.sahaaybackend.handler;
 
+import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.model.daos.Ticket;
+import com.ekshunya.sahaaybackend.model.daos.TicketType;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.services.TicketServices;
@@ -11,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 
 /**
 For more information on how to write business handlers, please check the link below.
@@ -30,20 +36,21 @@ public class TicketGetHandler implements LightHttpHandler {
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         //This Makes the call async non blocking. We will further use mongo db stream to call the DB in an ASYNC way.
-        exchange.getRequestReceiver().receiveFullBytes(
-                (httpServerExchange, bytes) -> {
-                    //TODO add code here to call the Mongo DB.
-                    try {
-                        TicketCreateDto ticketCreateDto = this.objectMapper.readValue(bytes, TicketCreateDto.class);
-                        TicketDto ticketDto = this.ticketServices.createTicket(ticketCreateDto);
-                        httpServerExchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDto));
-                        httpServerExchange.setStatusCode(200);
-                    } catch (IOException e) {
-                        log.error(Arrays.toString(e.getStackTrace()));
-                        httpServerExchange.setStatusCode(400);
-                    }
-                    httpServerExchange.endExchange();
-                }
-        );
+        try {
+            Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();
+            String ticketType  = queryParameters.get("ticketType").getFirst();
+            String latitude = queryParameters.get("latitude").getFirst();
+            String longitude = queryParameters.get("longitude").getFirst();
+            List<TicketDto> ticketDtos = this.ticketServices.fetchAllTicketOfType(ticketType,latitude,longitude);
+            exchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDtos));
+            exchange.setStatusCode(200);
+        } catch (IOException e) {
+            log.error(Arrays.toString(e.getStackTrace()));
+            exchange.setStatusCode(400);
+        } catch (DataNotFoundException dataNotFoundException) {
+            log.error(Arrays.toString(dataNotFoundException.getStackTrace()));
+            exchange.setStatusCode(404);
+        }
+        exchange.endExchange();
     }
 }

@@ -6,6 +6,8 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.google.inject.Inject;
 import com.mongodb.reactivestreams.client.MongoDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class TicketServices {
@@ -30,5 +32,11 @@ public class TicketServices {
 	public TicketDto fetchTicketFromId(final UUID ticketId) {
 		//TODO get the TicketDto from MongoDB
 		return null;
+	}
+
+	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) {
+		//TODO do a pagination using bucket pattern in mongo DB.
+		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
+		return new ArrayList<>();
 	}
 }
