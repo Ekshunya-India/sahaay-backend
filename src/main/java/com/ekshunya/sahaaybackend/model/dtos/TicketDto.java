@@ -8,8 +8,8 @@ import java.util.List;
 @Value
 public class TicketDto  {
     LocationDto locationDto;
-    ZonedDateTime expectedEnd;
-    Integer visibility;
+    String expectedEnd;
+    int visibility;
     String description;
     String ticketType;
     String title;

@@ -40,7 +40,7 @@ public class TicketFacade {
 		return new ArrayList<>();
 	}
 
-	public TicketDto updateTicketWithUpdate(final TicketFeedDto ticketFeedDto) {
+	public TicketDto updateTicketWithFeed(final TicketFeedDto ticketFeedDto) {
 		//TODO figure out how to retrive the formData
 		return null;
 	}

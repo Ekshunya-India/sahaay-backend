@@ -16,13 +16,13 @@ For more information on how to write business handlers, please check the link be
 https://doc.networknt.com/development/business-handler/rest/
 */
 @Slf4j
-public class TicketUpdatePostHandler implements LightHttpHandler {
+public class TicketFeedPostHandler implements LightHttpHandler {
     private final TicketFacade ticketFacade;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public TicketUpdatePostHandler(final TicketFacade ticketFacade,
-                                   final ObjectMapper objectMapper){
+    public TicketFeedPostHandler(final TicketFacade ticketFacade,
+                                 final ObjectMapper objectMapper){
         this.objectMapper = objectMapper;
         this.ticketFacade = ticketFacade;
     }
@@ -32,7 +32,7 @@ public class TicketUpdatePostHandler implements LightHttpHandler {
         String ticketId = exchange.getPathParameters().get("ticketId").getFirst();
         FormData formData = exchange.getAttachment(FormDataParser.FORM_DATA);
         TicketFeedDto ticketFeedDto = new TicketFeedDto(ticketId, formData);
-        TicketDto updatedTicket = this.ticketFacade.updateTicketWithUpdate(ticketFeedDto);
+        TicketDto updatedTicket = this.ticketFacade.updateTicketWithFeed(ticketFeedDto);
         exchange.getResponseSender().send(this.objectMapper.writeValueAsString(updatedTicket));
         exchange.setStatusCode(200);
         exchange.endExchange();
