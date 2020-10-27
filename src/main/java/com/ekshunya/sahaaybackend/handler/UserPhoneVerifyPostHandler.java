@@ -32,7 +32,7 @@ public class UserPhoneVerifyPostHandler implements LightHttpHandler {
     }
 
     @Override
-    public void handleRequest(HttpServerExchange exchange) throws Exception {
+    public void handleRequest(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes((httpServerExchange, bytes)->{
             try {
                 PhoneNumberVerifyDto phoneNumberVerifyDto = this.objectMapper.readValue(bytes, PhoneNumberVerifyDto.class);
