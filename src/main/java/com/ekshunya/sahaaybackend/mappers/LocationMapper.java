@@ -8,6 +8,5 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface LocationMapper {
 	LocationMapper INSTANCE = Mappers.getMapper(LocationMapper.class);
-
 	LocationDto locationToLocationDto(final Location location);
 }
