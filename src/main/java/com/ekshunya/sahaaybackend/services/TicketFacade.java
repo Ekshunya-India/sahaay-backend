@@ -38,24 +38,33 @@ public class TicketFacade {
 		//First time using the Java Fibers. Hopefully its correct.
 		ThreadFactory factory = Thread.builder().virtual().factory();
 		Future<TicketDto> ticketCreatedDto;
-		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(1))){
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))){
 			ticketCreatedDto = executor.submit(()->{
 				Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
 				Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
 				return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
 			});
 			return ticketCreatedDto.get();
-		} catch ( ExecutionException
-				exception){
+		} catch ( ExecutionException exception){
 			log.error(ERROR_MESSAGE,exception);
 			throw new BadDataException(Arrays.toString(exception.getStackTrace()));
 		}
 	}
 
-	public TicketDto updateTicket(final TicketDetailsUpdateDto ticketDetailsUpdateDto) {
-		Ticket ticketToUpdate = TicketMapper.INSTANCE.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
-		Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
-		return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
+	public TicketDto updateTicket(@NonNull final TicketDetailsUpdateDto ticketDetailsUpdateDto) throws InterruptedException {
+		ThreadFactory factory = Thread.builder().virtual().factory();
+		Future<TicketDto> ticketUpdatedFuture;
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))){
+			ticketUpdatedFuture = executor.submit(()->{
+				Ticket ticketToUpdate = TicketMapper.INSTANCE.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
+				Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
+				return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
+			});
+			return ticketUpdatedFuture.get();
+		} catch ( ExecutionException exception){
+			log.error(ERROR_MESSAGE,exception);
+			throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+		}
 	}
 
 	public TicketDto fetchTicketFromId(final UUID ticketId) {

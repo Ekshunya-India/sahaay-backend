@@ -4,6 +4,7 @@ import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -33,6 +35,7 @@ public class TicketFacadeTest {
 	private TicketCreateDto ticketCreateDto;
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
+	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private static final String DESC = "A Bridge is about to crumble";
 	private static final String TITLE = "A new problem in the Aread";
 	private static final String USER_ID = UUID.randomUUID().toString();
@@ -44,6 +47,8 @@ public class TicketFacadeTest {
 				DESC,"PROBLEM",TITLE,"P1", USER_ID);
 		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
 				DESC,"PROBLEM",TITLE,"SOME_OTHER_PRIORITY", USER_ID);
+		ticketDetailsUpdateDto = new TicketDetailsUpdateDto(locationDto,new ArrayList<>(),ZonedDateTime.now().plusDays(20),
+				1,UUID.randomUUID().toString(),ZonedDateTime.now(),"SOME_DESC","PROBLEM","SOME_TITLE","P!","CANCELLED");
 	}
 
 	@After
@@ -78,5 +83,10 @@ public class TicketFacadeTest {
 				DESC,"PROBLEM",TITLE,"P1", USER_ID);
 
 		sut.createTicket(invalidCreateDto);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void updateTicketThrowsNullPointerExceptionWhenNullIsPassed() throws InterruptedException {
+		sut.updateTicket(null);
 	}
 }

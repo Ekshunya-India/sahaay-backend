@@ -1,6 +1,7 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.services.TicketFacade;
@@ -44,6 +45,9 @@ public class TicketTicketIdPutHandler implements LightHttpHandler {
             } catch (DataNotFoundException dataNotFoundException){
                 log.error(Arrays.toString(dataNotFoundException.getStackTrace()));
                 httpServerExchange.setStatusCode(404);
+            } catch (InterruptedException e) {
+                log.error(Arrays.toString(e.getStackTrace()));
+                throw new InternalServerException("There was an error while processing the request");
             }
         });
         exchange.endExchange();
