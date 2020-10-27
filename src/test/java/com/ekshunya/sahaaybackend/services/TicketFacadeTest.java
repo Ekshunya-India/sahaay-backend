@@ -71,4 +71,12 @@ public class TicketFacadeTest {
 	public void createTicketThrowsBadDataExceotion(){
 		sut.createTicket(invalidCreateDto);
 	}
+
+	@Test(expected = BadDataException.class)
+	public void createTicketThrowsBadDataExceptionWhenThereIsABadDateFormatException(){
+		invalidCreateDto = new TicketCreateDto(locationDto, "SOME_BAD_DATA",1,
+				DESC,"PROBLEM",TITLE,"P1", USER_ID);
+
+		sut.createTicket(invalidCreateDto);
+	}
 }

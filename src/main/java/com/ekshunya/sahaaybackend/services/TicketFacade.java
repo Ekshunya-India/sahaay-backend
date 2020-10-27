@@ -15,6 +15,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotNull;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Slf4j
 public class TicketFacade {
 	private final TicketService ticketService;
-
+	private final static String ERROR_MESSAGE="ERROR : There was an Error while processing the new ticket request";
 	@Inject
 	public TicketFacade(final TicketService ticketService){
 		this.ticketService = ticketService;
@@ -34,9 +35,8 @@ public class TicketFacade {
 
 			Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
 			return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
-		} catch (IllegalArgumentException illegalArgumentException){
-			String error = "ERROR : There was an Error while processing the new ticket request";
-			log.error(error,illegalArgumentException);
+		} catch (IllegalArgumentException | DateTimeParseException illegalArgumentException){
+			log.error(ERROR_MESSAGE,illegalArgumentException);
 			throw new BadDataException(Arrays.toString(illegalArgumentException.getStackTrace()));
 		}
 	}
