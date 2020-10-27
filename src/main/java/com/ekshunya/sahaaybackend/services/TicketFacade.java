@@ -10,7 +10,9 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
+import lombok.NonNull;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class TicketFacade {
 		this.ticketService = ticketService;
 	}
 
-	public TicketDto createTicket(final TicketCreateDto ticketCreateDto) {
+	public TicketDto createTicket(@NonNull final TicketCreateDto ticketCreateDto) {
 		Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
 
 		Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);

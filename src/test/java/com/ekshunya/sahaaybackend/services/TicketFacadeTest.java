@@ -57,4 +57,9 @@ public class TicketFacadeTest {
 		assertEquals(TITLE, capturedTicket.getTitle());
 		assertEquals("P1", capturedTicket.getPriority().name());
 	}
+
+	@Test(expected = NullPointerException.class) //TODO since we are emitting Nullpointer exception to the handler we need to atleast handle it in the Upper handler and give a nice 500 Error Page in HTML.
+	public void createTicketIsCalledWithANullValueThrowsException(){
+		sut.createTicket(null);
+	}
 }
