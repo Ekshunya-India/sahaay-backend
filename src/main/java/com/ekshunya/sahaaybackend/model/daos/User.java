@@ -7,9 +7,9 @@ import java.util.UUID;
 
 @Value
 public class User {
-	UUID userId;
-	UserType userType;
+	UUID id;
+	UserType type;
 	String avatarUrl;
-	String userName;
-	String userPhoneNumber;
+	String name;
+	String phoneNumber;
 }

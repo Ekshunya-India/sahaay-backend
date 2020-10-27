@@ -10,4 +10,6 @@ public class TicketService {
 	public TicketService(final MongoDatabase mongoDatabase){
 		this.mongoDatabase = mongoDatabase;
 	}
+
+
 }

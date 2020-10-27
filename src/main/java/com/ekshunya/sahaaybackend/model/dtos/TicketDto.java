@@ -7,9 +7,9 @@ import java.util.List;
 
 @Value
 public class TicketDto  {
-    LocationDto locationDto;
-    ZonedDateTime expectedEnd;
-    Integer visibility;
+    LocationDto location;
+    String expectedEnd;
+    int visibility;
     String description;
     String ticketType;
     String title;

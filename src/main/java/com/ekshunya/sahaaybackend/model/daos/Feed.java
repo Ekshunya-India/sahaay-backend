@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Value
-public class Update {
+public class Feed {
 	UUID id; //Generated.
 	@NotNull(message = "There should always be a created date time associated with the update")
 	@PastOrPresent
 	ZonedDateTime created;
 	ZonedDateTime lastUpdated;
 	@NotNull()
-	List<Attachement> attachmentList;
+	List<Attachement> attachments;
 	User userId; //Optional
 }

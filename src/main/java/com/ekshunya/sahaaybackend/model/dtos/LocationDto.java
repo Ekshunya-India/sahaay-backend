@@ -4,6 +4,6 @@ import lombok.Value;
 
 @Value
 public class LocationDto  {
-    double latitude;
-    double longitude;
+    double lng;
+    double lat;
 }

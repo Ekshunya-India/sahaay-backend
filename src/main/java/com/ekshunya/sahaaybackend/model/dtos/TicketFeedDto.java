@@ -4,7 +4,7 @@ import io.undertow.server.handlers.form.FormData;
 import lombok.Value;
 
 @Value
-public class TicketUpdateDto {
+public class TicketFeedDto {
 	String ticketId;
 	FormData formData;
 }
