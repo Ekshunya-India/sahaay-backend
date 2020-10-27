@@ -1,5 +1,6 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.mappers.FeedMapper;
 import com.ekshunya.sahaaybackend.mappers.TicketMapper;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
@@ -11,11 +12,14 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 public class TicketFacade {
 	private final TicketService ticketService;
 
@@ -25,10 +29,16 @@ public class TicketFacade {
 	}
 
 	public TicketDto createTicket(@NonNull final TicketCreateDto ticketCreateDto) {
-		Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+		try{
+			Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
 
-		Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
-		return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
+			Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
+			return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
+		} catch (IllegalArgumentException illegalArgumentException){
+			String error = "ERROR : There was an Error while processing the new ticket request";
+			log.error(error,illegalArgumentException);
+			throw new BadDataException(Arrays.toString(illegalArgumentException.getStackTrace()));
+		}
 	}
 
 	public TicketDto updateTicket(final TicketDetailsUpdateDto ticketDetailsUpdateDto) {

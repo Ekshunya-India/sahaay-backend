@@ -1,5 +1,6 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
@@ -30,6 +31,7 @@ public class TicketFacadeTest {
 	@Captor
 	private ArgumentCaptor<Ticket> ticketArgumentCaptor;
 	private TicketCreateDto ticketCreateDto;
+	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
 	private static final String DESC = "A Bridge is about to crumble";
 	private static final String TITLE = "A new problem in the Aread";
@@ -40,6 +42,8 @@ public class TicketFacadeTest {
 		locationDto = new LocationDto(22.00, 23.00);
 		ticketCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
 				DESC,"PROBLEM",TITLE,"P1", USER_ID);
+		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
+				DESC,"PROBLEM",TITLE,"SOME_OTHER_PRIORITY", USER_ID);
 	}
 
 	@After
@@ -61,5 +65,10 @@ public class TicketFacadeTest {
 	@Test(expected = NullPointerException.class) //TODO since we are emitting Nullpointer exception to the handler we need to atleast handle it in the Upper handler and give a nice 500 Error Page in HTML.
 	public void createTicketIsCalledWithANullValueThrowsException(){
 		sut.createTicket(null);
+	}
+
+	@Test(expected = BadDataException.class)
+	public void createTicketThrowsBadDataExceotion(){
+		sut.createTicket(invalidCreateDto);
 	}
 }
