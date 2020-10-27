@@ -36,6 +36,7 @@ public class TicketFacadeTest {
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
 	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
+	private TicketDetailsUpdateDto invalidTicketDetails;
 	private static final String DESC = "A Bridge is about to crumble";
 	private static final String TITLE = "A new problem in the Aread";
 	private static final String USER_ID = UUID.randomUUID().toString();
@@ -48,7 +49,9 @@ public class TicketFacadeTest {
 		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
 				DESC,"PROBLEM",TITLE,"SOME_OTHER_PRIORITY", USER_ID);
 		ticketDetailsUpdateDto = new TicketDetailsUpdateDto(locationDto,new ArrayList<>(),ZonedDateTime.now().plusDays(20),
-				1,UUID.randomUUID().toString(),ZonedDateTime.now(),"SOME_DESC","PROBLEM","SOME_TITLE","P!","CANCELLED");
+				1,UUID.randomUUID().toString(),ZonedDateTime.now(),"SOME_DESC","PROBLEM","SOME_TITLE","P1","CANCELLED");
+		invalidTicketDetails = new TicketDetailsUpdateDto(locationDto,new ArrayList<>(),ZonedDateTime.now().plusDays(20),
+				1,UUID.randomUUID().toString(),ZonedDateTime.now(),"SOME_DESC","SOME_OTHER_INVALID","SOME_TITLE","P1","CANCELLED");
 	}
 
 	@After
@@ -88,5 +91,10 @@ public class TicketFacadeTest {
 	@Test(expected = NullPointerException.class)
 	public void updateTicketThrowsNullPointerExceptionWhenNullIsPassed() throws InterruptedException {
 		sut.updateTicket(null);
+	}
+
+	@Test(expected = BadDataException.class)
+	public void updateTicketThrowsBadDataExceptionWhenThereIsBadData() throws InterruptedException {
+		sut.updateTicket(invalidTicketDetails);
 	}
 }
