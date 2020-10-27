@@ -1,6 +1,7 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.exceptions.DataAlreadyExistsException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.services.TicketFacade;
@@ -44,6 +45,9 @@ public class TicketPostHandler implements LightHttpHandler {
                     } catch (DataAlreadyExistsException dataAlreadyExistsException) {
                         log.error(Arrays.toString(dataAlreadyExistsException.getStackTrace()));
                         httpServerExchange.setStatusCode(409);
+                    } catch (InterruptedException e) {
+                        log.error(Arrays.toString(e.getStackTrace()));
+                        throw new InternalServerException("There was an error while processing the request");
                     }
                     httpServerExchange.endExchange();
                 }

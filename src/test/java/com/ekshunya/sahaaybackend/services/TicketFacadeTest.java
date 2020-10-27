@@ -51,7 +51,7 @@ public class TicketFacadeTest {
 	}
 
 	@Test
-	public void ticketFacadeCreateTicketCallsTheServiceWithTheSame(){
+	public void ticketFacadeCreateTicketCallsTheServiceWithTheSame() throws InterruptedException {
 		TicketDto actualTicketDto = sut.createTicket(ticketCreateDto);
 
 		verify(this.ticketService,times(1)).createANewTicket(ticketArgumentCaptor.capture());
@@ -63,17 +63,17 @@ public class TicketFacadeTest {
 	}
 
 	@Test(expected = NullPointerException.class) //TODO since we are emitting Nullpointer exception to the handler we need to atleast handle it in the Upper handler and give a nice 500 Error Page in HTML.
-	public void createTicketIsCalledWithANullValueThrowsException(){
+	public void createTicketIsCalledWithANullValueThrowsException() throws InterruptedException {
 		sut.createTicket(null);
 	}
 
 	@Test(expected = BadDataException.class)
-	public void createTicketThrowsBadDataExceotion(){
+	public void createTicketThrowsBadDataExceotion() throws InterruptedException {
 		sut.createTicket(invalidCreateDto);
 	}
 
 	@Test(expected = BadDataException.class)
-	public void createTicketThrowsBadDataExceptionWhenThereIsABadDateFormatException(){
+	public void createTicketThrowsBadDataExceptionWhenThereIsABadDateFormatException() throws InterruptedException {
 		invalidCreateDto = new TicketCreateDto(locationDto, "SOME_BAD_DATA",1,
 				DESC,"PROBLEM",TITLE,"P1", USER_ID);
 
