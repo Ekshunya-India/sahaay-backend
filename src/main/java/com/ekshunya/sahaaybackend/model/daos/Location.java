@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 @Value
 public class Location {
 	@NotNull(message = "longitude cannot be null")
-	double longitude;
+	double lng;
 	@NotNull(message = "latitude cannot be null")
-	double latitude;
+	double lat;
 }

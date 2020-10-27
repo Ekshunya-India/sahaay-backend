@@ -38,7 +38,7 @@ public class Ticket {
 	int visibility;
 	int upvotes;
 	int downvotes;
-	List<Update> updates;
+	List<Feed> feeds;
 	List<Comment> comments;
 	List<String> tags;
 }
