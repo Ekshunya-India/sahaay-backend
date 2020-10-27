@@ -10,7 +10,7 @@ public class TicketDto  {
     LocationDto location;
     String expectedEnd;
     int visibility;
-    String description;
+    String desc;
     String ticketType;
     String title;
     String priority;
