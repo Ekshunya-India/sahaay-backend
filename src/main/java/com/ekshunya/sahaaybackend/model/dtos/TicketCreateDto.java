@@ -6,10 +6,10 @@ import java.time.ZonedDateTime;
 
 @Value
 public class TicketCreateDto  {
-    LocationDto locationDto;
-    ZonedDateTime expectedEnd;
-    Integer visibility;
-    String description;
+    LocationDto location;
+    String expectedEnd;
+    int visibility;
+    String desc;
     String ticketType;
     String title;
     String priority;

@@ -1,57 +1,92 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.exceptions.BadDataException;
+import com.ekshunya.sahaaybackend.mappers.FeedMapper;
+import com.ekshunya.sahaaybackend.mappers.TicketMapper;
+import com.ekshunya.sahaaybackend.model.daos.Feed;
+import com.ekshunya.sahaaybackend.model.daos.Ticket;
+import com.ekshunya.sahaaybackend.model.daos.TicketType;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
+@Slf4j
 public class TicketFacade {
 	private final TicketService ticketService;
-
+	private final static String ERROR_MESSAGE="ERROR : There was an Error while processing the new ticket request";
 	@Inject
 	public TicketFacade(final TicketService ticketService){
 		this.ticketService = ticketService;
 	}
 
-	public TicketDto createTicket(final TicketCreateDto ticketCreateDto) {
-		//TODO connect with MongoDB Ticket Collection and create the Ticket.
-		return null;
+	public TicketDto createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
+		//First time using the Java Fibers. Hopefully its correct.
+		ThreadFactory factory = Thread.builder().virtual().factory();
+		Future<TicketDto> ticketCreatedDto;
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(1))){
+			ticketCreatedDto = executor.submit(()->{
+				Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+				Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
+				return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
+			});
+			return ticketCreatedDto.get();
+		} catch ( ExecutionException
+				exception){
+			log.error(ERROR_MESSAGE,exception);
+			throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+		}
 	}
 
 	public TicketDto updateTicket(final TicketDetailsUpdateDto ticketDetailsUpdateDto) {
-		//TODO update the Ticket in Mongo DB using the Async Drivers. Return value might change here as Mongo might return a Publisher.
-		return null;
+		Ticket ticketToUpdate = TicketMapper.INSTANCE.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
+		Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
+		return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
 	}
 
 	public TicketDto fetchTicketFromId(final UUID ticketId) {
-		//TODO get the TicketDto from MongoDB
-		return null;
+		Ticket existingTicket = this.ticketService.fetchTicket(ticketId);
+		return TicketMapper.INSTANCE.ticketToTicketDto(existingTicket);
 	}
 
 	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) {
+		TicketType actualTicketType = TicketType.valueOf(ticketType);
+		List<Ticket> openTickets = this.ticketService.fetchAllOpenedTicket(actualTicketType, latitude,longitude);
 		//TODO do a pagination using bucket pattern in mongo DB.
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
-		return new ArrayList<>();
+		return TicketMapper.INSTANCE.ticketsToTicketDtos(openTickets);
 	}
 
 	public TicketDto updateTicketWithFeed(final TicketFeedDto ticketFeedDto) {
-		//TODO figure out how to retrive the formData
-		return null;
+		Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
+		Ticket updatedTicket = this.ticketService.updateWithFeed(newFeed);
+		return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
 	}
 
 	public boolean deleteTicketWithId(final String ticketId) {
 		//TODO delete a Ticket in MongoDB
-		return false;
+		UUID ticketIdToDelete = UUID.fromString(ticketId);
+		return this.ticketService.deleteTicket(ticketIdToDelete);
 	}
 
-	public List<TicketDto> fetchAllTicketsForUser(final String userId) {
-		//TODO implement fetchTicketsOfUsers.
-		return new ArrayList<>();
+	public List<TicketDto> fetchAllTicketsForUser(final String userIdAsString) {
+		UUID userId = UUID.fromString(userIdAsString);
+		List<Ticket> userCreatedTickets = this.ticketService.fetchAllOpenTicketsForUser(userId);
+		return TicketMapper.INSTANCE.ticketsToTicketDtos(userCreatedTickets);
 	}
 }
