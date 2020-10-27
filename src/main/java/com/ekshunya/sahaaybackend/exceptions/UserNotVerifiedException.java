@@ -1,8 +1,9 @@
 package com.ekshunya.sahaaybackend.exceptions;
 
-public class UserNotVerifiedException {
+public class UserNotVerifiedException extends BaseApiException{
 	private int statusCode;
-	public UserNotVerifiedException(){
+	public UserNotVerifiedException(final String message){
+		super(message);
 		statusCode=403;
 	}
 }
