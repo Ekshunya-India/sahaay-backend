@@ -99,7 +99,6 @@ public class TicketFacadeTest {
 		sut.updateTicket(invalidTicketDetails);
 	}
 
-	@Ignore //TODO for now. Need to see why the MapStruct mapper is not working as expected.
 	@Test
 	public void updateTicketGivesTheDetailsToServiceToUpdate() throws InterruptedException{
 		sut.updateTicket(ticketDetailsUpdateDto);
