@@ -1,5 +1,8 @@
 package com.ekshunya.sahaaybackend.exceptions;
 
-public class UnsupportedMediaTypeException extends RuntimeException{
-	private final int statusCode = 415;
+public class UnsupportedMediaTypeException extends BaseApiException{
+	public UnsupportedMediaTypeException(){
+		this.statusCode = 415;
+	}
+	private final int statusCode;
 }
