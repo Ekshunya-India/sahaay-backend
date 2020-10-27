@@ -9,13 +9,13 @@ import lombok.Value;
 
 @Value
 public class TicketDetailsUpdateDto  {
-    LocationDto locationDto;
+    LocationDto location;
     List<CommentDto> comments;
-    ZonedDateTime expectedEnd;
+    String expectedEnd;
     Integer visibility;
     String ticketAssignedTo;
-    ZonedDateTime actualEnd;
-    String description;
+    String actualEnd;
+    String desc;
     String ticketType;
     String title;
     String priority;
