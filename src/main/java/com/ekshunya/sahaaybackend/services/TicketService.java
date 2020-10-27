@@ -33,10 +33,23 @@ public class TicketService {
 	}
 
 	public List<Ticket> fetchAllOpenedTicket(final TicketType actualTicketType, final String latitude, final String longitude) {
+		//TODO put inside a Java Fiber.
 		return new ArrayList<>();
 	}
 
 	public Ticket updateWithFeed(final Feed newFeed) {
+		//TODO put inside a Java Fiber the call to MongoDB.
+		return null;
+	}
+
+	public boolean deleteTicket(final UUID ticketIdToDelete) {
+
+		//TODO put inside a Java Fiber the call to MongoDB.
+		return false;
+	}
+
+	public List<Ticket> fetchAllOpenTicketsForUser(final UUID userId) {
+		//TODO put inside a Java Fiber the call to MongoDB.
 		return null;
 	}
 }

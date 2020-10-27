@@ -11,7 +11,6 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +24,7 @@ public class TicketFacade {
 
 	public TicketDto createTicket(final TicketCreateDto ticketCreateDto) {
 		Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+
 		Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
 		return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
 	}
@@ -57,11 +57,13 @@ public class TicketFacade {
 
 	public boolean deleteTicketWithId(final String ticketId) {
 		//TODO delete a Ticket in MongoDB
-		return false;
+		UUID ticketIdToDelete = UUID.fromString(ticketId);
+		return this.ticketService.deleteTicket(ticketIdToDelete);
 	}
 
-	public List<TicketDto> fetchAllTicketsForUser(final String userId) {
-		//TODO implement fetchTicketsOfUsers.
-		return new ArrayList<>();
+	public List<TicketDto> fetchAllTicketsForUser(final String userIdAsString) {
+		UUID userId = UUID.fromString(userIdAsString);
+		List<Ticket> userCreatedTickets = this.ticketService.fetchAllOpenTicketsForUser(userId);
+		return TicketMapper.INSTANCE.ticketsToTicketDtos(userCreatedTickets);
 	}
 }

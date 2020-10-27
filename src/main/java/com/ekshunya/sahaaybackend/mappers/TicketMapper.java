@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mapper
 public interface TicketMapper {
@@ -32,5 +33,8 @@ public interface TicketMapper {
 
 	default TicketType mapTicketType(final String ticketType){
 		return TicketType.valueOf(ticketType);
+	}
+	default UUID stringToUUID(final String userId){
+		return UUID.fromString(userId);
 	}
 }
