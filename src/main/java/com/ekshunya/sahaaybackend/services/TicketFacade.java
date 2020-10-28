@@ -1,6 +1,7 @@
 package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.mappers.FeedMapper;
 import com.ekshunya.sahaaybackend.mappers.TicketMapper;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
@@ -14,6 +15,7 @@ import com.google.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -83,35 +85,63 @@ public class TicketFacade {
 		}
 	}
 
-	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) {
+	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) throws InterruptedException {
 		Future<List<Ticket>> futureTickets;
 		ThreadFactory factory = Thread.builder().virtual().factory();
 		TicketType actualTicketType = TicketType.valueOf(ticketType);
 		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
 			futureTickets = executor.submit(()->this.ticketService.fetchAllOpenedTicket(actualTicketType, latitude,longitude));
+			List<Ticket> openTickets = futureTickets.get();
+			return TicketMapper.INSTANCE.ticketsToTicketDtos(openTickets);
+		} catch (ExecutionException e) {
+			log.error(ERROR_MESSAGE,e);
+			throw new InternalServerException(ERROR_MESSAGE);
 		}
-		List<Ticket> openTickets = futureTickets.get();
-		//TODO do a pagination using bucket pattern in mongo DB.
-		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
-		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
-		return TicketMapper.INSTANCE.ticketsToTicketDtos(openTickets);
 	}
 
-	public TicketDto updateTicketWithFeed(final TicketFeedDto ticketFeedDto) {
+	public TicketDto updateTicketWithFeed(final TicketFeedDto ticketFeedDto) throws InterruptedException {
 		Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
-		Ticket updatedTicket = this.ticketService.updateWithFeed(newFeed);
+		ThreadFactory factory = Thread.builder().virtual().factory();
+		Ticket updatedTicket;
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+			Future<Ticket> ticketFuture = executor.submit(()->
+				this.ticketService.updateWithFeed(newFeed));
+			updatedTicket = ticketFuture.get();
+		} catch (ExecutionException e) {
+			log.error(ERROR_MESSAGE,e);
+			throw new InternalServerException(ERROR_MESSAGE);
+		}
 		return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
 	}
 
-	public boolean deleteTicketWithId(final String ticketId) {
+	public boolean deleteTicketWithId(@NotEmpty final String ticketId) throws InterruptedException {
 		//TODO delete a Ticket in MongoDB
+		ThreadFactory factory = Thread.builder().virtual().factory();
 		UUID ticketIdToDelete = UUID.fromString(ticketId);
-		return this.ticketService.deleteTicket(ticketIdToDelete);
+		Future<Boolean> deletedFlagFuture;
+		boolean isDeleted = false;
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+			deletedFlagFuture = executor.submit(()->this.ticketService.deleteTicket(ticketIdToDelete));
+			isDeleted =deletedFlagFuture.get();
+		} catch (ExecutionException e) {
+			log.error(ERROR_MESSAGE,e);
+			throw new InternalServerException(ERROR_MESSAGE);
+		}
+		return isDeleted;
 	}
 
-	public List<TicketDto> fetchAllTicketsForUser(final String userIdAsString) {
+	public List<TicketDto> fetchAllTicketsForUser(final String userIdAsString) throws InterruptedException {
+		ThreadFactory factory = Thread.builder().virtual().factory();
 		UUID userId = UUID.fromString(userIdAsString);
-		List<Ticket> userCreatedTickets = this.ticketService.fetchAllOpenTicketsForUser(userId);
-		return TicketMapper.INSTANCE.ticketsToTicketDtos(userCreatedTickets);
+		Future<List<Ticket>> ticketsFuture;
+		List<Ticket> ticketDtosToReturn;
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+			ticketsFuture= executor.submit(()-> this.ticketService.fetchAllOpenTicketsForUser(userId));
+			ticketDtosToReturn = ticketsFuture.get();
+		} catch (ExecutionException e) {
+			log.error(ERROR_MESSAGE,e);
+			throw new InternalServerException(ERROR_MESSAGE);
+		}
+		return TicketMapper.INSTANCE.ticketsToTicketDtos(ticketDtosToReturn);
 	}
 }
