@@ -16,4 +16,5 @@ public class TicketDto  {
     String priority;
     String userId;
     List<String> tags;
+    String state;
 }

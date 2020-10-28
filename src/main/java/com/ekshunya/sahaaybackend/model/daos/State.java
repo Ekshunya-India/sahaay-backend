@@ -1,5 +1,5 @@
 package com.ekshunya.sahaaybackend.model.daos;
 
-public enum States {
+public enum State {
 	OPENED,CLOSED,CAMPAIGNING,VOTE_OF_CONFIDENCE,CANCELLED
 }

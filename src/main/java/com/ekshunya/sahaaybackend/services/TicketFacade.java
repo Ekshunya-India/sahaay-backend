@@ -86,7 +86,7 @@ public class TicketFacade {
                 log.error(ERROR_MESSAGE,e);
                 throw new DataNotFoundException(e.getMessage());
             }
-            throw new BadDataException("There was an error while fetching the data from Database"); //TODO this is wrong. This needs to change.
+            throw new BadDataException("There was an error while converting the data from Database"); //TODO this is wrong. This needs to change.
         }
     }
 
