@@ -5,4 +5,13 @@ public class InternalServerException extends BaseApiException{
 		super(message);
 		this.statusCode=500;
 	}
+	public InternalServerException(final String message, final Throwable cause) {
+		super(message, cause);
+		this.statusCode = 500;
+	}
+
+	public InternalServerException(final Throwable cause) {
+		super(cause);
+		this.statusCode = 500;
+	}
 }

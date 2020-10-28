@@ -1,6 +1,8 @@
 package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
+import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
@@ -22,8 +24,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TicketFacadeTest {
@@ -89,7 +90,7 @@ public class TicketFacadeTest {
 		sut.createTicket(invalidCreateDto);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = NullPointerException.class) //TODO I do not like the fact that we are emitting Null Pointer Exception here. But the thinking was that handler would have already done this check.
 	public void updateTicketThrowsNullPointerExceptionWhenNullIsPassed() throws InterruptedException {
 		sut.updateTicket(null);
 	}
@@ -109,5 +110,17 @@ public class TicketFacadeTest {
 		assertEquals(DESC, capturedTicket.getDesc());
 		assertEquals(TITLE, capturedTicket.getTitle());
 		assertEquals("P1", capturedTicket.getPriority().name());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void fetchTicketFromIdThowsNullPointerExceptionWhenidIsNull() throws InterruptedException {
+		sut.fetchTicketFromId(null);
+	}
+
+	@Test(expected = DataNotFoundException.class)
+	public void whenNoTicketWithIdPresentThrowsDataNotFoundException() throws InterruptedException {
+		UUID uuid = UUID.randomUUID();
+		when(ticketService.fetchTicket(eq(uuid))).thenThrow(new DataNotFoundException("THIS IS ME BEING STUPID"));
+		sut.fetchTicketFromId(uuid);
 	}
 }

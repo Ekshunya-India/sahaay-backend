@@ -1,10 +1,12 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
 import com.google.inject.Inject;
 import com.mongodb.reactivestreams.client.MongoDatabase;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,15 +23,15 @@ public class TicketService {
 
 	public Ticket createANewTicket(final Ticket ticketToSave) {
 		//TODO connect with MongoDB Ticket Collection and create the Ticket.
-		return null;
+		throw new NotImplementedException("Yet to Implement");
 	}
 
 	public Ticket updateTicket(final Ticket ticketToUpdate) {
-		return null;
+		throw new NotImplementedException("Yet to Implement");
 	}
 
-	public Ticket fetchTicket(final UUID ticketId) {
-		return null;
+	public Ticket fetchTicket(final UUID ticketId) throws DataNotFoundException {
+		throw new NotImplementedException("Yet to Implement");
 	}
 
 	public List<Ticket> fetchAllOpenedTicket(final TicketType actualTicketType, final String latitude, final String longitude) {
@@ -37,22 +39,22 @@ public class TicketService {
 		//TODO do a pagination using bucket pattern in mongo DB.
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
-		return new ArrayList<>();
+		throw new NotImplementedException("Yet to Implement");
 	}
 
 	public Ticket updateWithFeed(final Feed newFeed) {
 		//TODO put inside a Java Fiber the call to MongoDB.
-		return null;
+		throw new NotImplementedException("Yet to Implement");
 	}
 
 	public boolean deleteTicket(final UUID ticketIdToDelete) {
 
 		//TODO put inside a Java Fiber the call to MongoDB.
-		return false;
+		throw new NotImplementedException("Yet to Implement");
 	}
 
 	public List<Ticket> fetchAllOpenTicketsForUser(final UUID userId) {
 		//TODO put inside a Java Fiber the call to MongoDB.
-		return null;
+		throw new NotImplementedException("Yet to Implement");
 	}
 }

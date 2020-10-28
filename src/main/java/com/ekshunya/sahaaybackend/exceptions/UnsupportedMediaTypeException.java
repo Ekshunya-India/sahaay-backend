@@ -5,5 +5,14 @@ public class UnsupportedMediaTypeException extends BaseApiException{
 		super(message);
 		this.statusCode = 415;
 	}
-	private final int statusCode;
+
+	public UnsupportedMediaTypeException(final String message, final Throwable cause) {
+		super(message, cause);
+		this.statusCode = 415;
+	}
+
+	public UnsupportedMediaTypeException(final Throwable cause) {
+		super(cause);
+		this.statusCode = 415;
+	}
 }
