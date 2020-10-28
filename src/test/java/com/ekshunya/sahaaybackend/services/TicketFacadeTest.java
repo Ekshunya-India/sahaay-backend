@@ -40,6 +40,8 @@ public class TicketFacadeTest {
 	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketDetailsUpdateDto invalidTicketDetails;
 	private Ticket validTicket;
+	private static final double LAT = 20.00;
+	private static final double LNG = 20.00;
 	private static final UUID uuid = UUID.randomUUID();
 	private static final String DESC = "A Bridge is about to crumble";
 	private static final String TITLE = "A new problem in the Aread";
@@ -135,5 +137,22 @@ public class TicketFacadeTest {
 		assertEquals(State.OPENED.name(),ticketDto.getState());
 		assertEquals(DESC,ticketDto.getDesc());
 		assertEquals(TITLE,ticketDto.getTitle());
+	}
+
+	@Test(expected = BadDataException.class)
+	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {
+		sut.fetchAllTicketOfType("SOME_TICKETTYPE","20.00","30.00");
+	}
+
+	@Test(expected = BadDataException.class)
+	public void whenInValidDataGivenToFetchThrowsBadDataExceptionWhenParsingWrongDouble() throws InterruptedException {
+		sut.fetchAllTicketOfType("PROBLEM","SOME_BAD_DATA","30.00");
+	}
+
+	@Test(expected = DataNotFoundException.class)
+	public void whenDataNotFoundExceptionIsThrownInExcecutorThenItIsPropagated() throws InterruptedException {
+		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
+
+		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
 	}
 }

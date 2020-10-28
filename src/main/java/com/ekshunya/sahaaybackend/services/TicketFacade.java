@@ -93,14 +93,22 @@ public class TicketFacade {
     public List<TicketDto> fetchAllTicketOfType(@NonNull final String ticketType, @NonNull final String latitude, @NonNull final String longitude) throws InterruptedException {
         Future<List<Ticket>> futureTickets;
         ThreadFactory factory = Thread.builder().virtual().factory();
-        TicketType actualTicketType = TicketType.valueOf(ticketType);
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, latitude, longitude));
+            TicketType actualTicketType = TicketType.valueOf(ticketType);
+            double lat = Double.parseDouble(latitude);
+            double lng = Double.parseDouble(longitude);
+            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng));
             List<Ticket> openTickets = futureTickets.get();
             return TicketMapper.INSTANCE.ticketsToTicketDtos(openTickets);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
+            if(e.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.DataNotFoundException")){
+                throw new DataNotFoundException(e);
+            }
             throw new InternalServerException(ERROR_MESSAGE);
+        } catch (IllegalArgumentException e){
+            log.error(ERROR_MESSAGE, e);
+            throw new BadDataException(e);
         }
     }
 
