@@ -112,6 +112,7 @@ public class TicketFacade {
         }
     }
 
+    //TODO add unit tests to cover this method.
     public TicketDto updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
         Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
@@ -127,6 +128,7 @@ public class TicketFacade {
         return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
     }
 
+    //TODO add unit tests to cover this method.
     public boolean deleteTicketWithId(@NonNull final String ticketId) throws InterruptedException {
         //TODO delete a Ticket in MongoDB
         ThreadFactory factory = Thread.builder().virtual().factory();
@@ -143,6 +145,7 @@ public class TicketFacade {
         return isDeleted;
     }
 
+    //TODO add unit tests to cover this method.
     public List<TicketDto> fetchAllTicketsForUser(@NonNull final String userIdAsString) throws InterruptedException {
         ThreadFactory factory = Thread.builder().virtual().factory();
         UUID userId = UUID.fromString(userIdAsString);
