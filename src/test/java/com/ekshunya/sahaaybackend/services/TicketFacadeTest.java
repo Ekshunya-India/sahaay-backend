@@ -127,7 +127,6 @@ public class TicketFacadeTest {
 		sut.fetchTicketFromId(uuid);
 	}
 
-	@Ignore //TODO this is failing for some reason. Need to investigate. Seems like a mapstruct problem of not implmenting the mapping mnethod.
 	@Test
 	public void whenValidTicketIdIsGivenTheDataReturnedByServiceIsReturned() throws InterruptedException {
 		when(ticketService.fetchTicket(eq(uuid))).thenReturn(validTicket);

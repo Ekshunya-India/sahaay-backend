@@ -31,7 +31,6 @@ public interface TicketMapper {
 	default Priority mapPriority(final String priority){
 		return Priority.valueOf(priority);
 	}
-
 	default TicketType mapTicketType(final String ticketType){
 		return TicketType.valueOf(ticketType);
 	}
