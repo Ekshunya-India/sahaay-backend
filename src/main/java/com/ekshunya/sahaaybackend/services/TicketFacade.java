@@ -41,6 +41,7 @@ public class TicketFacade {
 		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))){
 			ticketCreatedDto = executor.submit(()->{
 				Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+				//TODO in the next iteration we will change the call with fibers so that only the DB call is inside one of these. Mapper code can be moved out of fiber.
 				Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
 				return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
 			});
@@ -67,14 +68,29 @@ public class TicketFacade {
 		}
 	}
 
-	public TicketDto fetchTicketFromId(final UUID ticketId) {
-		Ticket existingTicket = this.ticketService.fetchTicket(ticketId);
-		return TicketMapper.INSTANCE.ticketToTicketDto(existingTicket);
+	public TicketDto fetchTicketFromId(final UUID ticketId) throws InterruptedException {
+		Future<TicketDto> updatedTicketFuture;
+		ThreadFactory factory = Thread.builder().virtual().factory();
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))){
+			updatedTicketFuture = executor.submit(()->{
+				Ticket existingTicket = this.ticketService.fetchTicket(ticketId);
+				return TicketMapper.INSTANCE.ticketToTicketDto(existingTicket);
+			});
+			return updatedTicketFuture.get();
+		} catch (ExecutionException e) { //This is wrong. We need to catch the indivizual exception that is nested inside the ExecutionException.
+			log.error(ERROR_MESSAGE,e);
+			throw new BadDataException("There was an error while fetching the data from Database"); //TODO this is wrong. This needs to change.
+		}
 	}
 
 	public List<TicketDto> fetchAllTicketOfType(final String ticketType, final String latitude, final String longitude) {
+		Future<List<Ticket>> futureTickets;
+		ThreadFactory factory = Thread.builder().virtual().factory();
 		TicketType actualTicketType = TicketType.valueOf(ticketType);
-		List<Ticket> openTickets = this.ticketService.fetchAllOpenedTicket(actualTicketType, latitude,longitude);
+		try(var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+			futureTickets = executor.submit(()->this.ticketService.fetchAllOpenedTicket(actualTicketType, latitude,longitude));
+		}
+		List<Ticket> openTickets = futureTickets.get();
 		//TODO do a pagination using bucket pattern in mongo DB.
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
 		// https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
