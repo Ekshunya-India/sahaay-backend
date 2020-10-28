@@ -155,4 +155,13 @@ public class TicketFacadeTest {
 
 		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
 	}
+
+	@Test
+	public void validDataGivenToFetchAllTicketsValidDataIsPassedOnToService() throws InterruptedException {
+		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenReturn(new ArrayList<>());
+
+		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+
+		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
+	}
 }
