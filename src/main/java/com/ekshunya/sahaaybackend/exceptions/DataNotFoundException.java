@@ -5,5 +5,14 @@ public class DataNotFoundException extends BaseApiException{
 		super(message);
 		this.statusCode=404;
 	}
-	//TODO specify the correct Log Format in the Logger and Add appropriate Error code to the Exception
+
+	public DataNotFoundException(final String message, final Throwable cause) {
+		super(message, cause);
+		this.statusCode = 404;
+	}
+
+	public DataNotFoundException(final Throwable cause) {
+		super(cause);
+		this.statusCode = 404;
+	}
 }

@@ -31,7 +31,7 @@ public class TicketPostHandler implements LightHttpHandler {
     }
 
     @Override
-    public void handleRequest(HttpServerExchange exchange) throws Exception {
+    public void handleRequest(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes(
                 (httpServerExchange, bytes) -> {
                     try {

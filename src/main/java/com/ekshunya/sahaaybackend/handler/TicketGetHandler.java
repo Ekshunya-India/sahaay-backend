@@ -31,7 +31,7 @@ public class TicketGetHandler implements LightHttpHandler {
     }
 
     @Override
-    public void handleRequest(HttpServerExchange exchange) {
+    public void handleRequest(HttpServerExchange exchange) throws InterruptedException {
         //This Makes the call async non blocking. We will further use mongo db stream to call the DB in an ASYNC way.
         try {
             Map<String, Deque<String>> queryParameters = exchange.getQueryParameters();

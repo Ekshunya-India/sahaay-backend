@@ -1,5 +1,7 @@
 package com.ekshunya.sahaaybackend.model.daos;
 
+import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 
 import javax.validation.constraints.FutureOrPresent;
@@ -12,7 +14,8 @@ import java.util.UUID;
 // https://docs.mongodb.com/manual/core/data-model-design/ In general, embedding provides better performance for read operations, as well as the ability to request and retrieve related data in a single database operation. Embedded data models make it possible to update related data in a single atomic write operation.
 // https://docs.mongodb.com/manual/tutorial/model-referenced-one-to-many-relationships-between-documents/#data-modeling-publisher-and-books
 // Use shorter field names. description can be des, ticketOpenedBy can be openedBy, https://docs.mongodb.com/manual/core/data-model-operations/#storage-optimization-for-small-documents
-@Value
+@Builder
+@Getter
 public class Ticket {
 	UUID id;
 	@NotNull(message = "The ticket title cannot be null")
@@ -25,8 +28,8 @@ public class Ticket {
 	@FutureOrPresent
 	ZonedDateTime expectedEnd;
 	ZonedDateTime actualEnd;
-	User openedBy;
-	User assignedTo;
+	UUID openedBy;
+	UUID assignedTo;
 	@NotNull(message = "The location associated to the ticket cannot be null")
 	Location location;
 	@NotNull(message = "A Ticket must have a default priority")
@@ -34,7 +37,7 @@ public class Ticket {
 	@NotNull(message = "A Ticket must be valid type")
 	TicketType ticketType;
 	@NotNull(message = "A Ticket must be in a valid State")
-	States currentState;
+	State state;
 	int visibility;
 	int upvotes;
 	int downvotes;
