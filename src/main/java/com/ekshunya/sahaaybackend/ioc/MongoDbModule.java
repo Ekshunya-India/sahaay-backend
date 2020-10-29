@@ -2,15 +2,25 @@ package com.ekshunya.sahaaybackend.ioc;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
+
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class MongoDbModule extends AbstractModule {
+	//TODO add SSL/TLS support to MongoDB in the configuration below.
 	@Provides
-	public MongoDatabase providesMongoDb(){
-		//TODO the mongoDB connection needs to come from config properties file.
-		MongoClient mongoClient = MongoClients.create("mongodb://hostOne:27017");
-		return mongoClient.getDatabase("mydb");
+	public MongoClientSettings providesClientSettings(){
+		ConnectionString connectionString = new ConnectionString(System.getProperty("mongodb.uri"));
+		CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
+		CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+				pojoCodecRegistry);
+		return MongoClientSettings.builder()
+				.applyConnectionString(connectionString)
+				.codecRegistry(codecRegistry)
+				.build();
 	}
 }

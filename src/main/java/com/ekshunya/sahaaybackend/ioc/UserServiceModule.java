@@ -3,7 +3,7 @@ package com.ekshunya.sahaaybackend.ioc;
 import com.ekshunya.sahaaybackend.services.UserService;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoDatabase;
 
 public class UserServiceModule extends AbstractModule {
 	@Provides

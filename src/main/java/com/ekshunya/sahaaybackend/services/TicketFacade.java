@@ -16,10 +16,7 @@ import com.google.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -38,18 +35,19 @@ public class TicketFacade {
         this.ticketService = ticketService;
     }
 
-    public TicketDto createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
+    public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Future<TicketDto> ticketCreatedDto;
+        Future<Boolean> ticketCreatedAck;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            ticketCreatedDto = executor.submit(() -> {
+            ticketCreatedAck = executor.submit(() -> {
                 Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+                ticketToSave.setId(UUID.randomUUID());
                 //TODO in the next iteration we will change the call with fibers so that only the DB call is inside one of these. Mapper code can be moved out of fiber.
-                Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
-                return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
+                return this.ticketService.createANewTicket(ticketToSave);
+
             });
-            return ticketCreatedDto.get();
+            return ticketCreatedAck.get();
         } catch (ExecutionException exception) {
             log.error(ERROR_MESSAGE, exception);
             throw new BadDataException(Arrays.toString(exception.getStackTrace()));

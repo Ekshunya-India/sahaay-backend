@@ -30,6 +30,7 @@
         <version.maven-surefire>2.22.2</version.maven-surefire>
         <version.maven-source>3.1.0</version.maven-source>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
+        <version.lombok>1.18.16</version.lombok>
     </properties>
 
     <dependencies>
@@ -98,7 +99,7 @@
             <artifactId>metrics</artifactId>
             <version>${version.light-4j}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.networknt</groupId>
             <artifactId>handler</artifactId>
@@ -209,16 +210,11 @@
             <artifactId>undertow-core</artifactId>
             <version>${version.undertow}</version>
         </dependency>
+        <!--TODO this needs to change. From Sync to Async. Currently the sync is inside a Virtual thread so good enough for now. -->
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-reactivestreams</artifactId>
-            <version>4.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
-            <scope>provided</scope>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.0.5</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
         <dependency>
@@ -245,9 +241,10 @@
             <version>6.1.6.Final</version>
         </dependency>
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${version.lombok}</version>
+            <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
         <dependency>
@@ -256,6 +253,13 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.1.Final</version>
+        </dependency>
+
 
         <!-- Test Dependencies -->
         <dependency>
@@ -294,12 +298,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.16</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
+                            <version>${version.lombok}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

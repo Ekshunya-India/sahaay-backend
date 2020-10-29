@@ -3,7 +3,7 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.model.dtos.PhoneNumberAddDto;
 import com.ekshunya.sahaaybackend.model.dtos.PhoneNumberVerifyDto;
 import com.ekshunya.sahaaybackend.model.dtos.UserDto;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoDatabase;
 
 public class UserService {
 	private final MongoDatabase mongoDatabase;

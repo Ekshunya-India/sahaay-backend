@@ -2,15 +2,12 @@ package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
-import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.model.daos.*;
 import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -23,7 +20,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,9 +48,9 @@ public class TicketFacadeTest {
 	@Before
 	public void setUp() throws Exception {
 		locationDto = new LocationDto(22.00, 23.00);
-		ticketCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
+		ticketCreateDto = new TicketCreateDto(uuid,locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
 				DESC, "PROBLEM", TITLE, "P1", USER_ID);
-		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
+		invalidCreateDto = new TicketCreateDto(uuid, locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
 				DESC, "PROBLEM", TITLE, "SOME_OTHER_PRIORITY", USER_ID);
 		ticketDetailsUpdateDto = new TicketDetailsUpdateDto(locationDto, new ArrayList<>(), ZonedDateTime.now().plusDays(20).toString(),
 				1, UUID.randomUUID().toString(), ZonedDateTime.now().toString(), DESC, "PROBLEM", TITLE, "P1", "CANCELLED");
@@ -64,7 +62,7 @@ public class TicketFacadeTest {
 
 	@Test
 	public void ticketFacadeCreateTicketCallsTheServiceWithTheSame() throws InterruptedException {
-		TicketDto actualTicketDto = sut.createTicket(ticketCreateDto);
+		sut.createTicket(ticketCreateDto);
 
 		verify(this.ticketService,times(1)).createANewTicket(ticketArgumentCaptor.capture());
 		Ticket capturedTicket = ticketArgumentCaptor.getValue();
@@ -86,7 +84,7 @@ public class TicketFacadeTest {
 
 	@Test(expected = BadDataException.class)
 	public void createTicketThrowsBadDataExceptionWhenThereIsABadDateFormatException() throws InterruptedException {
-		invalidCreateDto = new TicketCreateDto(locationDto, "SOME_BAD_DATA",1,
+		invalidCreateDto = new TicketCreateDto(uuid, locationDto, "SOME_BAD_DATA",1,
 				DESC,"PROBLEM",TITLE,"P1", USER_ID);
 
 		sut.createTicket(invalidCreateDto);
@@ -160,4 +158,5 @@ public class TicketFacadeTest {
 
 		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
 	}
+	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
 }

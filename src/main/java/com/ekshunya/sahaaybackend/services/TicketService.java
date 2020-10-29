@@ -5,25 +5,36 @@ import com.ekshunya.sahaaybackend.model.daos.Feed;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
 import com.google.inject.Inject;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
 import org.apache.commons.lang3.NotImplementedException;
+import org.bson.BsonValue;
+import org.bson.Document;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.UUID;
 
 public class TicketService {
-	private final MongoDatabase mongoDatabase;
+	private final MongoClientSettings clientSettings;
 
 	@Inject
-	public TicketService(final MongoDatabase mongoDatabase){
-		this.mongoDatabase = mongoDatabase;
+	public TicketService(final MongoClientSettings clientSettings){
+		this.clientSettings = clientSettings;
 	}
 
 
-	public Ticket createANewTicket(final Ticket ticketToSave) {
-		//TODO connect with MongoDB Ticket Collection and create the Ticket.
-		throw new NotImplementedException("Yet to Implement");
+	//TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
+	public boolean createANewTicket(final Ticket ticketToSave) {
+		try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
+			MongoDatabase db = mongoClient.getDatabase("sahaay-db");
+			MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
+			return tickets.insertOne(ticketToSave).wasAcknowledged();
+		}
 	}
 
 	public Ticket updateTicket(final Ticket ticketToUpdate) {

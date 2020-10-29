@@ -3,7 +3,6 @@ package com.ekshunya.sahaaybackend.handler;
 import com.ekshunya.sahaaybackend.exceptions.DataAlreadyExistsException;
 import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.services.TicketFacade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -36,9 +35,13 @@ public class TicketPostHandler implements LightHttpHandler {
                 (httpServerExchange, bytes) -> {
                     try {
                         TicketCreateDto ticketCreateDto = this.objectMapper.readValue(bytes, TicketCreateDto.class);
-                        TicketDto ticketDto = this.ticketFacade.createTicket(ticketCreateDto);
-                        httpServerExchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDto));
-                        httpServerExchange.setStatusCode(201);
+                        if (this.ticketFacade.createTicket(ticketCreateDto)){
+                            httpServerExchange.getResponseSender().send(ticketCreateDto.getId().toString());
+                            httpServerExchange.setStatusCode(201);
+                        }else{
+                            log.error("There was a problem while creating the new Ticket");
+                            httpServerExchange.setStatusCode(500);
+                        }
                     } catch (IOException e) {
                         log.error(Arrays.toString(e.getStackTrace()));
                         httpServerExchange.setStatusCode(400);

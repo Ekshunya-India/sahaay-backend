@@ -2,10 +2,11 @@ package com.ekshunya.sahaaybackend.model.dtos;
 
 import lombok.Value;
 
-import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Value
 public class TicketCreateDto  {
+    UUID id;
     LocationDto location;
     String expectedEnd;
     int visibility;
