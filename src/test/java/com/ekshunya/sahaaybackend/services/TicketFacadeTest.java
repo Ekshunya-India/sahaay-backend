@@ -50,20 +50,16 @@ public class TicketFacadeTest {
 	@Before
 	public void setUp() throws Exception {
 		locationDto = new LocationDto(22.00, 23.00);
-		ticketCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
-				DESC,"PROBLEM",TITLE,"P1", USER_ID);
-		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(),1,
-				DESC,"PROBLEM",TITLE,"SOME_OTHER_PRIORITY", USER_ID);
-		ticketDetailsUpdateDto = new TicketDetailsUpdateDto(locationDto,new ArrayList<>(),ZonedDateTime.now().plusDays(20).toString(),
-				1,UUID.randomUUID().toString(),ZonedDateTime.now().toString(),DESC,"PROBLEM",TITLE,"P1","CANCELLED");
-		invalidTicketDetails = new TicketDetailsUpdateDto(locationDto,new ArrayList<>(),ZonedDateTime.now().plusDays(20).toString(),
-				1,UUID.randomUUID().toString(),ZonedDateTime.now().toString(),DESC,"SOME_OTHER_INVALID","SOME_TITLE","P1","CANCELLED");
-		validTicket = Ticket.builder().id(uuid).ticketType(TicketType.PROBLEM).title(TITLE).desc(DESC).created(ZonedDateTime.now()).expectedEnd(ZonedDateTime.now().plusDays(20))
-		.priority(Priority.P1).location(new Location(22.00,23.00)).state(State.OPENED).build();
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		ticketCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
+				DESC, "PROBLEM", TITLE, "P1", USER_ID);
+		invalidCreateDto = new TicketCreateDto(locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
+				DESC, "PROBLEM", TITLE, "SOME_OTHER_PRIORITY", USER_ID);
+		ticketDetailsUpdateDto = new TicketDetailsUpdateDto(locationDto, new ArrayList<>(), ZonedDateTime.now().plusDays(20).toString(),
+				1, UUID.randomUUID().toString(), ZonedDateTime.now().toString(), DESC, "PROBLEM", TITLE, "P1", "CANCELLED");
+		invalidTicketDetails = new TicketDetailsUpdateDto(locationDto, new ArrayList<>(), ZonedDateTime.now().plusDays(20).toString(),
+				1, UUID.randomUUID().toString(), ZonedDateTime.now().toString(), DESC, "SOME_OTHER_INVALID", "SOME_TITLE", "P1", "CANCELLED");
+		validTicket = new Ticket(uuid, TITLE, DESC, ZonedDateTime.now(), ZonedDateTime.now().plusDays(30)
+				, null, uuid, uuid, new Location(22.00, 23.00), Priority.P1, TicketType.PROBLEM, State.OPENED, 1, 0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 	}
 
 	@Test
