@@ -210,12 +210,12 @@
             <artifactId>undertow-core</artifactId>
             <version>${version.undertow}</version>
         </dependency>
-        <!--TODO this needs to change. From Sync to Async. Currently the sync is inside a Virtual thread so good enough for now. -->
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.0.5</version>
+            <groupId>com.github.jntakpe</groupId>
+            <artifactId>mongo-reactor-adapter</artifactId>
+            <version>0.1.2</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
         <dependency>
             <groupId>com.google.inject</groupId>

@@ -2,7 +2,7 @@ package com.ekshunya.sahaaybackend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.networknt.handler.LightHttpHandler;
 import io.undertow.server.HttpServerExchange;
 
