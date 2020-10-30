@@ -32,10 +32,9 @@ public class MongoDbModule extends AbstractModule {
 	//TODO add in the Readme to read about this project https://github.com/jntakpe/mongo-reactor-adapter
 	@Provides
 	public ReactorMongoDatabase providesMongoDatabase() {
-		try (MongoClient mongoClient = MongoClients.create(providesClientSettings())) {
+		MongoClient mongoClient = MongoClients.create(providesClientSettings());
 
 			ReactorMongoClient reactorClient = MongoReactorKt.toReactor(mongoClient);
 			return reactorClient.getDatabase("sahaay-db");
-		}
 	}
 }
