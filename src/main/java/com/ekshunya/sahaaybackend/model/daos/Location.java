@@ -12,6 +12,13 @@ public class Location  {
 	@NotNull(message = "A location must have a type for it. Perhapes a Point?")
 	GeoJsonObjectType type;
 	Point point;
+	public double getLng(){
+		return this.getPoint().getPosition().getValues().get(0);
+	}
+
+	public double getLat(){
+		return this.getPoint().getPosition().getValues().get(1);
+	}
 
 	public Location(final double lng, final double lat){
 		this.type= GeoJsonObjectType.POINT;
