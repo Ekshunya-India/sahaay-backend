@@ -1,12 +1,14 @@
 package com.ekshunya.sahaaybackend.model.daos;
 
 import lombok.Value;
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Value
 public class Comment {
+	@BsonId
 	UUID id;
 	@NotNull(message = "Comment String cannot be Null in a comment")
 	String comment;

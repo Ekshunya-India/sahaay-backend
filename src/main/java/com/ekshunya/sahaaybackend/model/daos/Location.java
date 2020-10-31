@@ -1,13 +1,27 @@
 package com.ekshunya.sahaaybackend.model.daos;
 
+import com.mongodb.client.model.geojson.GeoJsonObjectType;
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import lombok.Value;
 
 import javax.validation.constraints.NotNull;
 
 @Value
-public class Location {
-	@NotNull(message = "longitude cannot be null")
-	double lng;
-	@NotNull(message = "latitude cannot be null")
-	double lat;
+public class Location  {
+	@NotNull(message = "A location must have a type for it. Perhapes a Point?")
+	GeoJsonObjectType type;
+	Point point;
+	public double getLng(){
+		return this.getPoint().getPosition().getValues().get(0);
+	}
+
+	public double getLat(){
+		return this.getPoint().getPosition().getValues().get(1);
+	}
+
+	public Location(final double lng, final double lat){
+		this.type= GeoJsonObjectType.POINT;
+		this.point = new Point(new Position(lng,lat));
+	}
 }

@@ -5,16 +5,12 @@ import com.ekshunya.sahaaybackend.model.dtos.UserDto;
 import com.ekshunya.sahaaybackend.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.mongodb.reactivestreams.client.MongoDatabase;
 import com.networknt.handler.LightHttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
 For more information on how to write business handlers, please check the link below.

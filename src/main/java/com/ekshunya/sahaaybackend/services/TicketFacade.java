@@ -16,10 +16,7 @@ import com.google.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -38,18 +35,18 @@ public class TicketFacade {
         this.ticketService = ticketService;
     }
 
-    public TicketDto createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
+    public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Future<TicketDto> ticketCreatedDto;
+        Future<Boolean> ticketCreatedAck;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            ticketCreatedDto = executor.submit(() -> {
+            ticketCreatedAck = executor.submit(() -> {
                 Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+                ticketToSave.setId(UUID.randomUUID());
                 //TODO in the next iteration we will change the call with fibers so that only the DB call is inside one of these. Mapper code can be moved out of fiber.
-                Ticket createdTicket = this.ticketService.createANewTicket(ticketToSave);
-                return TicketMapper.INSTANCE.ticketToTicketDto(createdTicket);
+                return this.ticketService.createANewTicket(ticketToSave);
             });
-            return ticketCreatedDto.get();
+            return ticketCreatedAck.get();
         } catch (ExecutionException exception) {
             log.error(ERROR_MESSAGE, exception);
             throw new BadDataException(Arrays.toString(exception.getStackTrace()));
@@ -113,36 +110,32 @@ public class TicketFacade {
     }
 
     //TODO add unit tests to cover this method.
-    public TicketDto updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
+    public boolean updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
         Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Ticket updatedTicket;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            Future<Ticket> ticketFuture = executor.submit(() ->
-                    this.ticketService.updateWithFeed(newFeed));
-            updatedTicket = ticketFuture.get();
+            Future<Long> ticketFuture = executor.submit(() ->
+                    this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getTicketId()));
+            return ticketFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
             throw new InternalServerException(ERROR_MESSAGE);
         }
-        return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
     }
 
     //TODO add unit tests to cover this method.
-    public boolean deleteTicketWithId(@NonNull final String ticketId) throws InterruptedException {
+    public boolean deleteTicketWithId(@NonNull final String ticketId, @NonNull final UUID userId) throws InterruptedException {
         //TODO delete a Ticket in MongoDB
         ThreadFactory factory = Thread.builder().virtual().factory();
         UUID ticketIdToDelete = UUID.fromString(ticketId);
-        Future<Boolean> deletedFlagFuture;
-        boolean isDeleted = false;
+        Future<Long> deletedFlagFuture;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketIdToDelete));
-            isDeleted = deletedFlagFuture.get();
+            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketIdToDelete,userId));
+            return deletedFlagFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
             throw new InternalServerException(ERROR_MESSAGE);
         }
-        return isDeleted;
     }
 
     //TODO add unit tests to cover this method.

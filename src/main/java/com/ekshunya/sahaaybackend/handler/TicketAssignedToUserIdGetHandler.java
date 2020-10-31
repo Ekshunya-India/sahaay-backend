@@ -2,12 +2,9 @@ package com.ekshunya.sahaaybackend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import com.mongodb.client.MongoDatabase;
 import com.networknt.handler.LightHttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
 For more information on how to write business handlers, please check the link below.
