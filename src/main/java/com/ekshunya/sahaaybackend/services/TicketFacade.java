@@ -110,36 +110,32 @@ public class TicketFacade {
     }
 
     //TODO add unit tests to cover this method.
-    public TicketDto updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
+    public boolean updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
         Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Ticket updatedTicket;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            Future<Ticket> ticketFuture = executor.submit(() ->
-                    this.ticketService.updateWithFeed(newFeed));
-            updatedTicket = ticketFuture.get();
+            Future<Long> ticketFuture = executor.submit(() ->
+                    this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getTicketId()));
+            return ticketFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
             throw new InternalServerException(ERROR_MESSAGE);
         }
-        return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
     }
 
     //TODO add unit tests to cover this method.
-    public boolean deleteTicketWithId(@NonNull final String ticketId) throws InterruptedException {
+    public boolean deleteTicketWithId(@NonNull final String ticketId, @NonNull final UUID userId) throws InterruptedException {
         //TODO delete a Ticket in MongoDB
         ThreadFactory factory = Thread.builder().virtual().factory();
         UUID ticketIdToDelete = UUID.fromString(ticketId);
-        Future<Boolean> deletedFlagFuture;
-        boolean isDeleted = false;
+        Future<Long> deletedFlagFuture;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketIdToDelete));
-            isDeleted = deletedFlagFuture.get();
+            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketIdToDelete,userId));
+            return deletedFlagFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
             throw new InternalServerException(ERROR_MESSAGE);
         }
-        return isDeleted;
     }
 
     //TODO add unit tests to cover this method.

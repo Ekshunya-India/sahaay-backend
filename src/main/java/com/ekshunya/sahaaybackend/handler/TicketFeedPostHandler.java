@@ -11,6 +11,8 @@ import io.undertow.server.handlers.form.FormData;
 import io.undertow.server.handlers.form.FormDataParser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 /**
 For more information on how to write business handlers, please check the link below.
 https://doc.networknt.com/development/business-handler/rest/
@@ -31,10 +33,10 @@ public class TicketFeedPostHandler implements LightHttpHandler {
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
         String ticketId = exchange.getPathParameters().get("ticketId").getFirst();
         FormData formData = exchange.getAttachment(FormDataParser.FORM_DATA);
-        TicketFeedDto ticketFeedDto = new TicketFeedDto(ticketId, formData);
-        TicketDto updatedTicket = this.ticketFacade.updateTicketWithFeed(ticketFeedDto);
-        exchange.getResponseSender().send(this.objectMapper.writeValueAsString(updatedTicket));
-        exchange.setStatusCode(200);
+        TicketFeedDto ticketFeedDto = new TicketFeedDto(UUID.fromString(ticketId), formData, UUID.randomUUID()); //TODO get the user Id from the Authenticated Manager from one of the middleware
+        boolean updatedTicket = this.ticketFacade.updateTicketWithFeed(ticketFeedDto);
+        exchange.getResponseSender().send(Boolean.toString(updatedTicket));
+        exchange.setStatusCode(200); //TODO add an if condition to set other status if the value is something else.
         exchange.endExchange();
     }
 }
