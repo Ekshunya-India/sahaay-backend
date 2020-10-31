@@ -48,3 +48,5 @@ Shout out : https://en.wikipedia.org/wiki/Pieter_Hintjens
             https://oauth.net/2/
             https://www.mongodb.com/
             https://www.networknt.com/
+
+ToDo: Currently all the DB calls are Synchronus but put inside a Java Fiber/Kotlin CoRoutines. So a fiber might be blocked but not the thread was the thinking.

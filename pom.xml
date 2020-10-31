@@ -211,9 +211,9 @@
             <version>${version.undertow}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jntakpe</groupId>
-            <artifactId>mongo-reactor-adapter</artifactId>
-            <version>0.1.2</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.1.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->

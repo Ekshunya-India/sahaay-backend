@@ -4,11 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoClients;
-import com.mongodb.reactor.client.MongoReactorKt;
-import com.mongodb.reactor.client.ReactorMongoClient;
-import com.mongodb.reactor.client.ReactorMongoDatabase;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
@@ -27,14 +22,5 @@ public class MongoDbModule extends AbstractModule {
 				.applyConnectionString(connectionString)
 				.codecRegistry(codecRegistry)
 				.build();
-	}
-
-	//TODO add in the Readme to read about this project https://github.com/jntakpe/mongo-reactor-adapter
-	@Provides
-	public ReactorMongoDatabase providesMongoDatabase() {
-		MongoClient mongoClient = MongoClients.create(providesClientSettings());
-
-			ReactorMongoClient reactorClient = MongoReactorKt.toReactor(mongoClient);
-			return reactorClient.getDatabase("sahaay-db");
 	}
 }

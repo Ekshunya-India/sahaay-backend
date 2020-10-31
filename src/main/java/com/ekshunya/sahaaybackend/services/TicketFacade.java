@@ -45,7 +45,6 @@ public class TicketFacade {
                 ticketToSave.setId(UUID.randomUUID());
                 //TODO in the next iteration we will change the call with fibers so that only the DB call is inside one of these. Mapper code can be moved out of fiber.
                 return this.ticketService.createANewTicket(ticketToSave);
-
             });
             return ticketCreatedAck.get();
         } catch (ExecutionException exception) {
