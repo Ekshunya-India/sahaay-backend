@@ -12,7 +12,7 @@ import java.util.UUID;
 @Value
 public class Feed {
 	@BsonId
-	UUID id; //Generated.
+	UUID id;
 	@NotNull(message = "There should always be a created date time associated with the update")
 	@PastOrPresent
 	ZonedDateTime created;

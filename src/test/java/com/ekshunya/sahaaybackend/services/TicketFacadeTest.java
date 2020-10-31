@@ -3,10 +3,8 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.model.daos.*;
-import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
+import com.ekshunya.sahaaybackend.model.dtos.*;
+import io.undertow.server.handlers.form.FormData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,12 +29,16 @@ public class TicketFacadeTest {
 	private TicketFacade sut;
 	@Captor
 	private ArgumentCaptor<Ticket> ticketArgumentCaptor;
+	@Captor
+	private ArgumentCaptor<Feed> feedCaptor;
 	private TicketCreateDto ticketCreateDto;
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
 	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketDetailsUpdateDto invalidTicketDetails;
 	private Ticket validTicket;
+	private TicketFeedDto validFeedDto;
+	private FormData formData;
 	private static final double LAT = 20.00;
 	private static final double LNG = 20.00;
 	private static final UUID uuid = UUID.randomUUID();
@@ -58,6 +59,8 @@ public class TicketFacadeTest {
 				1, UUID.randomUUID().toString(), ZonedDateTime.now().toString(), DESC, "SOME_OTHER_INVALID", "SOME_TITLE", "P1", "CANCELLED");
 		validTicket = new Ticket(uuid, TITLE, DESC, ZonedDateTime.now(), ZonedDateTime.now().plusDays(30)
 				, null, uuid, uuid, new Location(22.00, 23.00), Priority.P1, TicketType.PROBLEM, State.OPENED, 1, 0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		formData = new FormData(1);
+		validFeedDto = new TicketFeedDto(uuid, formData, uuid);
 	}
 
 	@Test
@@ -159,4 +162,14 @@ public class TicketFacadeTest {
 		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
 	}
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
+
+	@Test
+	public void validFeedAddedToATicketAddsNewFeedWhenDataIsCorrect() throws InterruptedException {
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
+		boolean wasUpdate = sut.updateTicketWithFeed(validFeedDto);
+		assertTrue(wasUpdate);
+		verify(ticketService,times(1)).updateWithFeed(feedCaptor.capture(),uuid);
+		Feed actualFeed = feedCaptor.getValue();
+		assertEquals(actualFeed.getUserId().getId(),uuid);
+	}
 }

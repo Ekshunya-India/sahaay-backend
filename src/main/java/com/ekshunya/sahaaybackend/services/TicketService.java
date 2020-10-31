@@ -85,8 +85,8 @@ public class TicketService {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
-            Document feedToAdd = Document.parse(this.objectMapper.writeValueAsString(newFeed));   //TODO i am not liking these many unnecessary serialization.
-            return tickets.updateOne(Filters.eq("id",ticketId), Updates.push("id.feeds.$.",feedToAdd)).getMatchedCount();
+            Document feedToAdd = Document.parse(this.objectMapper.writeValueAsString(newFeed));   //TODO i am not liking these many unnecessary serialization. And also should this be in TicketFacade.
+            return tickets.updateOne(Filters.eq("id",ticketId), Updates.push("id.feeds.$.",feedToAdd)).getMatchedCount();  //TODO the fieldName in Updates.push needs to be looked at properly.
         } catch (JsonProcessingException e) {
             log.error(ERROR);
             throw new BadDataException("There was an error while converting the data to Json format");

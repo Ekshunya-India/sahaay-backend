@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Value
 public class TicketFeedDto {
-	UUID ticketId;
+	UUID id;
 	FormData formData;
 	UUID userId;
 }

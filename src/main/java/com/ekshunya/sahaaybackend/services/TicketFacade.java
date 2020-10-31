@@ -78,7 +78,7 @@ public class TicketFacade {
                 return TicketMapper.INSTANCE.ticketToTicketDto(existingTicket);
             });
             return updatedTicketFuture.get();
-        } catch (ExecutionException e) { //This is wrong. We need to catch the indivizual exception that is nested inside the ExecutionException.
+        } catch (ExecutionException e) { //TODO This is wrong. We need to catch the indivizual exception that is nested inside the ExecutionException.
             if(e.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.DataNotFoundException")){
                 log.error(ERROR_MESSAGE,e);
                 throw new DataNotFoundException(e.getMessage());
@@ -111,11 +111,11 @@ public class TicketFacade {
 
     //TODO add unit tests to cover this method.
     public boolean updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
-        Feed newFeed = FeedMapper.INSTANCE.ticketFeedToFeed(ticketFeedDto);
+        Feed newFeed = FeedMapper.INSTANCE.ticketFeedDtoToFeed(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             Future<Long> ticketFuture = executor.submit(() ->
-                    this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getTicketId()));
+                    this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getId()));
             return ticketFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
