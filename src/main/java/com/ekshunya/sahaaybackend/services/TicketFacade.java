@@ -3,8 +3,6 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
-import com.ekshunya.sahaaybackend.mappers.FeedMapper;
-import com.ekshunya.sahaaybackend.mappers.TicketMapper;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
