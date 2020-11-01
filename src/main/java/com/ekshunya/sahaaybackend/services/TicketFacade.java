@@ -28,11 +28,11 @@ public class TicketFacade {
     private final TicketService ticketService;
     private final static String ERROR_MESSAGE = "ERROR : There was an Error while processing the request";
 
-    @Inject
     public TicketFacade(final TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
+    @Inject //TODO there is no Need to first change it to TicketCreateDto -> Ticket -> Bson. Let just change the TicketCreateDtoTo Inherit properties from a base class called Ticket, and can have two-3 Objects which will be the Dto's -> Bson's. Eg: TicketCreatedDto, TicketDetailsDto, MinimalTicketDto to Bson's.
     public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
