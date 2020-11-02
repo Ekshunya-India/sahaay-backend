@@ -69,14 +69,12 @@ public class TicketFacadeTest {
 
 	@Test
 	public void ticketFacadeCreateTicketCallsTheServiceWithTheSame() throws InterruptedException {
+		when(mainMapper.ticketCreateDtoToTicket(ticketCreateDto)).thenReturn(validTicket);
 		sut.createTicket(ticketCreateDto);
 
 		verify(this.ticketService,times(1)).createANewTicket(ticketArgumentCaptor.capture());
 		Ticket capturedTicket = ticketArgumentCaptor.getValue();
-		assertNotNull(capturedTicket);
-		assertEquals(DESC, capturedTicket.getDesc());
-		assertEquals(TITLE, capturedTicket.getTitle());
-		assertEquals("P1", capturedTicket.getPriority().name());
+		assertEquals(capturedTicket,validTicket);
 	}
 
 	@Test(expected = NullPointerException.class) //TODO since we are emitting Nullpointer exception to the handler we need to atleast handle it in the Upper handler and give a nice 500 Error Page in HTML.
@@ -109,14 +107,11 @@ public class TicketFacadeTest {
 
 	@Test
 	public void updateTicketGivesTheDetailsToServiceToUpdate() throws InterruptedException{
+		when(mainMapper.ticketDetailsUpdateDtoToTicket(eq(ticketDetailsUpdateDto))).thenReturn(validTicket);
 		sut.updateTicket(ticketDetailsUpdateDto);
 
 		verify(this.ticketService,times(1)).updateTicket(ticketArgumentCaptor.capture());
-		Ticket capturedTicket = ticketArgumentCaptor.getValue();
-		assertNotNull(capturedTicket);
-		assertEquals(DESC, capturedTicket.getDesc());
-		assertEquals(TITLE, capturedTicket.getTitle());
-		assertEquals("P1", capturedTicket.getPriority().name());
+		assertEquals(ticketArgumentCaptor.getValue(),validTicket);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -186,10 +181,10 @@ public class TicketFacadeTest {
 		sut.updateTicketWithFeed(validFeedDto);
 	}
 
-	@Test(expected = InternalServerException.class)
-	public void allExceptionRelatedToMapperIsTreatedAsInternalServer() throws InterruptedException {  //TODO this needs to change all mapper exceptions might be bad data.
+	@Test(expected = BadDataException.class)
+	public void badFeedGivenToTheUpdateMethodThrowsBadDataException() throws InterruptedException {  //TODO this needs to change all mapper exceptions might be bad data.
 		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
-		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenThrow(new IllegalStateException("SOME EXCEPTION"));
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(null);  //TODO returning Null here because the JMapper gives a Null when it cannot Map the data properly.
 		sut.updateTicketWithFeed(validFeedDto);
 	}
 }

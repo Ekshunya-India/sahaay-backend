@@ -32,12 +32,12 @@ public class TicketFacade {
     private final MainMapper mainMapper;
     private final static String ERROR_MESSAGE = "ERROR : There was an Error while processing the request";
 
+    @Inject
     public TicketFacade(final TicketService ticketService, final MainMapper mainMapper) {
         this.ticketService = ticketService;
         this.mainMapper=mainMapper;
     }
 
-    @Inject
     public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
@@ -123,11 +123,18 @@ public class TicketFacade {
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             Feed newFeed =  this.mainMapper.ticketFeedToTicket(ticketFeedDto);
+            if(newFeed==null){
+                log.error(ERROR_MESSAGE);
+                throw new BadDataException("There was a problem while converting the Data");
+            }
             Future<Long> ticketFuture = executor.submit(() ->
                     this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getId()));
             return ticketFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
+            if(e.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.BadDataException")){
+                throw new BadDataException("There was a problem while converting the Data"); //TODO This rethrow might distort the logs as the logs will show 2 exceptions in place of one.
+            }
             throw new InternalServerException(ERROR_MESSAGE);
         }
     }
