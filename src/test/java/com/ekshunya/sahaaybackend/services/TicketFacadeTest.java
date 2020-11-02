@@ -2,6 +2,7 @@ package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.mapper.MainMapper;
 import com.ekshunya.sahaaybackend.model.daos.*;
 import com.ekshunya.sahaaybackend.model.dtos.*;
@@ -171,5 +172,12 @@ public class TicketFacadeTest {
 		when(ticketService.deleteTicket(eq(uuid),eq(uuid))).thenReturn(2L);
 
 		assertFalse(sut.deleteTicketWithIdForUserId(uuid,uuid));
+	}
+
+	@Test(expected = InternalServerException.class)
+	public void deleteTicketThrowsInternalServerErrorWhenServiceThrowsUnExpectedError() throws InterruptedException {
+		when(ticketService.deleteTicket(eq(uuid),eq(uuid))).thenThrow(new IllegalStateException("SOME OTHER EXCEPTION"));
+
+		sut.deleteTicketWithIdForUserId(uuid,uuid);
 	}
 }
