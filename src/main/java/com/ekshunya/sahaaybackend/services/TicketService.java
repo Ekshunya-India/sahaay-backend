@@ -99,6 +99,7 @@ public class TicketService {
      * @param userId the Id of the User who the ticket was opened by. //TODO we need to add the funcanality that userId with Sahaay Premium can also delete the ticket.
      * @return the value of how many documents were deleted. Deleting a ticket ideally should give back a result of one.
      */   //TODO currently the functionality is that only the user who opened the ticket can delete the ticket. This will change in the future releases.
+          //TODO i already can imagine a new deleteTicket fuction because Problem type does not have user Id associated with it, So we just have to delete the data.
     public long deleteTicket(final UUID ticketIdToDelete, final UUID userId) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
