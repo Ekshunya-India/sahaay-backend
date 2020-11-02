@@ -2,11 +2,11 @@ package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
+import com.ekshunya.sahaaybackend.mapper.MainMapper;
 import com.ekshunya.sahaaybackend.model.daos.*;
-import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
-import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
+import com.ekshunya.sahaaybackend.model.dtos.*;
+import io.undertow.server.handlers.form.FormData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,12 +31,18 @@ public class TicketFacadeTest {
 	private TicketFacade sut;
 	@Captor
 	private ArgumentCaptor<Ticket> ticketArgumentCaptor;
+	@Captor
+	private ArgumentCaptor<Feed> feedCaptor;
+	@Mock
+	private MainMapper mainMapper;
 	private TicketCreateDto ticketCreateDto;
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
 	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketDetailsUpdateDto invalidTicketDetails;
 	private Ticket validTicket;
+	private TicketFeedDto validFeedDto;
+	private FormData formData;
 	private static final double LAT = 20.00;
 	private static final double LNG = 20.00;
 	private static final UUID uuid = UUID.randomUUID();
@@ -58,18 +63,18 @@ public class TicketFacadeTest {
 				1, UUID.randomUUID().toString(), ZonedDateTime.now().toString(), DESC, "SOME_OTHER_INVALID", "SOME_TITLE", "P1", "CANCELLED");
 		validTicket = new Ticket(uuid, TITLE, DESC, ZonedDateTime.now(), ZonedDateTime.now().plusDays(30)
 				, null, uuid, uuid, new Location(22.00, 23.00), Priority.P1, TicketType.PROBLEM, State.OPENED, 1, 0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		formData = new FormData(1);
+		validFeedDto = new TicketFeedDto(uuid, formData, uuid);
 	}
 
 	@Test
 	public void ticketFacadeCreateTicketCallsTheServiceWithTheSame() throws InterruptedException {
+		when(mainMapper.ticketCreateDtoToTicket(ticketCreateDto)).thenReturn(validTicket);
 		sut.createTicket(ticketCreateDto);
 
 		verify(this.ticketService,times(1)).createANewTicket(ticketArgumentCaptor.capture());
 		Ticket capturedTicket = ticketArgumentCaptor.getValue();
-		assertNotNull(capturedTicket);
-		assertEquals(DESC, capturedTicket.getDesc());
-		assertEquals(TITLE, capturedTicket.getTitle());
-		assertEquals("P1", capturedTicket.getPriority().name());
+		assertEquals(capturedTicket,validTicket);
 	}
 
 	@Test(expected = NullPointerException.class) //TODO since we are emitting Nullpointer exception to the handler we need to atleast handle it in the Upper handler and give a nice 500 Error Page in HTML.
@@ -102,14 +107,11 @@ public class TicketFacadeTest {
 
 	@Test
 	public void updateTicketGivesTheDetailsToServiceToUpdate() throws InterruptedException{
+		when(mainMapper.ticketDetailsUpdateDtoToTicket(eq(ticketDetailsUpdateDto))).thenReturn(validTicket);
 		sut.updateTicket(ticketDetailsUpdateDto);
 
 		verify(this.ticketService,times(1)).updateTicket(ticketArgumentCaptor.capture());
-		Ticket capturedTicket = ticketArgumentCaptor.getValue();
-		assertNotNull(capturedTicket);
-		assertEquals(DESC, capturedTicket.getDesc());
-		assertEquals(TITLE, capturedTicket.getTitle());
-		assertEquals("P1", capturedTicket.getPriority().name());
+		assertEquals(ticketArgumentCaptor.getValue(),validTicket);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -126,12 +128,10 @@ public class TicketFacadeTest {
 	@Test
 	public void whenValidTicketIdIsGivenTheDataReturnedByServiceIsReturned() throws InterruptedException {
 		when(ticketService.fetchTicket(eq(uuid))).thenReturn(validTicket);
-		TicketDto ticketDto = sut.fetchTicketFromId(uuid);
-		assertEquals(TicketType.PROBLEM.name(), ticketDto.getTicketType());
-		assertEquals(State.OPENED.name(),ticketDto.getState());
-		assertEquals(DESC,ticketDto.getDesc());
-		assertEquals(TITLE,ticketDto.getTitle());
-	}
+		sut.fetchTicketFromId(uuid);
+		verify(ticketService,times(1)).fetchTicket(eq(uuid));
+		}
+
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {
@@ -159,4 +159,32 @@ public class TicketFacadeTest {
 		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
 	}
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
+
+	@Test
+	public void validFeedAddedToATicketAddsNewFeedWhenDataIsCorrect() throws InterruptedException {
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
+		Feed validFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(validFeed);
+		boolean wasUpdate = sut.updateTicketWithFeed(validFeedDto);
+		assertTrue(wasUpdate);
+		verify(ticketService,times(1)).updateWithFeed(feedCaptor.capture(),eq(uuid));
+		//TODO currently just pushing what i have as this method is going to change a lot.
+		Feed actualFeed = feedCaptor.getValue();
+		assertEquals(actualFeed,validFeed);
+	}
+
+	@Test(expected = InternalServerException.class)
+	public void allExceptionsAreCurrentlyResultsInInternalServerErrorAsAllIsInsideAFiber() throws InterruptedException {
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenThrow(new IllegalStateException("SOME EXCEOTION"));
+		Feed validFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(validFeed);
+		sut.updateTicketWithFeed(validFeedDto);
+	}
+
+	@Test(expected = BadDataException.class)
+	public void badFeedGivenToTheUpdateMethodThrowsBadDataException() throws InterruptedException {  //TODO this needs to change all mapper exceptions might be bad data.
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(null);  //TODO returning Null here because the JMapper gives a Null when it cannot Map the data properly.
+		sut.updateTicketWithFeed(validFeedDto);
+	}
 }

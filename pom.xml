@@ -253,13 +253,11 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>1.4.1.Final</version>
+            <groupId>com.googlecode.jmapper-framework</groupId>
+            <artifactId>jmapper-core</artifactId>
+            <version>1.6.1.CR2</version>
         </dependency>
-
 
         <!-- Test Dependencies -->
         <dependency>
