@@ -2,6 +2,7 @@ package com.ekshunya.sahaaybackend.services;
 
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
+import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.mapper.MainMapper;
 import com.ekshunya.sahaaybackend.model.daos.*;
 import com.ekshunya.sahaaybackend.model.dtos.*;
@@ -170,11 +171,27 @@ public class TicketFacadeTest {
 	public void validFeedAddedToATicketAddsNewFeedWhenDataIsCorrect() throws InterruptedException {
 		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
 		Feed validFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(validFeed);
 		boolean wasUpdate = sut.updateTicketWithFeed(validFeedDto);
 		assertTrue(wasUpdate);
 		verify(ticketService,times(1)).updateWithFeed(feedCaptor.capture(),eq(uuid));
 		//TODO currently just pushing what i have as this method is going to change a lot.
-		//		Feed actualFeed = feedCaptor.getValue();
-//		assertEquals(actualFeed.getUserId(),uuid);
+		Feed actualFeed = feedCaptor.getValue();
+		assertEquals(actualFeed,validFeed);
+	}
+
+	@Test(expected = InternalServerException.class)
+	public void allExceptionsAreCurrentlyResultsInInternalServerErrorAsAllIsInsideAFiber() throws InterruptedException {
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenThrow(new IllegalStateException("SOME EXCEOTION"));
+		Feed validFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenReturn(validFeed);
+		sut.updateTicketWithFeed(validFeedDto);
+	}
+
+	@Test(expected = InternalServerException.class)
+	public void allExceptionRelatedToMapperIsTreatedAsInternalServer() throws InterruptedException {  //TODO this needs to change all mapper exceptions might be bad data.
+		when(ticketService.updateWithFeed(any(Feed.class),eq(uuid))).thenReturn(1L);
+		when(mainMapper.ticketFeedToTicket(eq(validFeedDto))).thenThrow(new IllegalStateException("SOME EXCEPTION"));
+		sut.updateTicketWithFeed(validFeedDto);
 	}
 }

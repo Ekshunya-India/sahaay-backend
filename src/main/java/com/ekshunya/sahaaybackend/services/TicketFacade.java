@@ -63,7 +63,7 @@ public class TicketFacade {
             ticketUpdatedFuture = executor.submit(() -> {
                 Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
-                return this.mainMapper.ticketToTicketDto(updatedTicket);//TODO can this seralization be avoided?
+                return this.mainMapper.ticketToTicketDto(updatedTicket);
             });
             return ticketUpdatedFuture.get();
         } catch (ExecutionException exception) {
@@ -114,9 +114,9 @@ public class TicketFacade {
 
     //TODO add unit tests to cover this method.
     public boolean updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
-        Feed newFeed =  this.mainMapper.ticketFeedToTicket(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+            Feed newFeed =  this.mainMapper.ticketFeedToTicket(ticketFeedDto);
             Future<Long> ticketFuture = executor.submit(() ->
                     this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getId()));
             return ticketFuture.get().equals(1L);
