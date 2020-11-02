@@ -1,6 +1,8 @@
 package com.ekshunya.sahaaybackend.services;
 
+import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.model.daos.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
@@ -8,6 +10,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
+import org.bson.json.JsonParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,10 +63,6 @@ public class TicketServiceTest {
         when(db.getCollection(eq("ticket"), eq(Ticket.class))).thenReturn(tickets);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void aValidCreateTicketGivesBackTrueWhenInserted(){
         when(tickets.insertOne(eq(validTicket))).thenReturn(InsertOneResult.acknowledged(null));
@@ -78,5 +77,11 @@ public class TicketServiceTest {
     public void anyExceptionThrownInCreateIsSentBack(){
         when(tickets.insertOne(eq(validTicket))).thenThrow(new IllegalStateException("SOME PROBLEM HAPPENED GOLEM"));
         sut.createANewTicket(validTicket);
+    }
+
+    @Test(expected = BadDataException.class)
+    public void updateTicketThrowsBadDataExceptionWhenThereIsAJsonProcessingException() throws JsonProcessingException {
+        when(objectMapper.writeValueAsString(eq(validTicket))).thenThrow(new JsonParseException("Bad Data"));
+        sut.updateTicket(validTicket);
     }
 }
