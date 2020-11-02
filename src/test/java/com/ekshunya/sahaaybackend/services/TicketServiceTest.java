@@ -5,12 +5,11 @@ import com.ekshunya.sahaaybackend.model.daos.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.json.JsonParseException;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +52,10 @@ public class TicketServiceTest {
     private ArgumentCaptor<Ticket> ticketArgumentCaptor;
     @Captor
     private ArgumentCaptor<Document> documentArgumentCaptor;
+    @Mock
+    private ArgumentCaptor<Bson> filterArgumentCaptor;
+    @Mock
+    private FindIterable<Ticket> findIterable;
     private Ticket validTicket;
     private UUID uuid;
     private Location location;
@@ -65,6 +68,7 @@ public class TicketServiceTest {
         when(MongoClients.create(eq(clientSettings))).thenReturn(eq(mongoClient));
         when(mongoClient.getDatabase(eq("sahaay-db"))).thenReturn(db);
         when(db.getCollection(eq("ticket"), eq(Ticket.class))).thenReturn(tickets);
+        when(findIterable.first()).thenReturn(validTicket);
     }
 
     @Test
@@ -104,5 +108,13 @@ public class TicketServiceTest {
         Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
         when(tickets.findOneAndUpdate(any(),eq(mongoDocumentToUpdate))).thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
         sut.updateTicket(validTicket);
+    }
+
+    @Test
+    public void validIdSentToTheIdIsGivenToMongoDb(){
+        Bson filter = Filters.eq("id",this.uuid);
+        when(tickets.find(eq(filter),eq(Ticket.class))).thenReturn(findIterable);
+        Ticket actualTicket =  sut.fetchTicket(uuid);
+        assertEquals(validTicket,actualTicket);
     }
 }
