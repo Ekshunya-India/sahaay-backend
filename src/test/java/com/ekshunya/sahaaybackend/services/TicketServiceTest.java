@@ -73,4 +73,10 @@ public class TicketServiceTest {
         verify(tickets.insertOne(ticketArgumentCaptor.capture()));
         assertEquals(validTicket, ticketArgumentCaptor.getValue());
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void anyExceptionThrownInCreateIsSentBack(){
+        when(tickets.insertOne(eq(validTicket))).thenThrow(new IllegalStateException("SOME PROBLEM HAPPENED GOLEM"));
+        sut.createANewTicket(validTicket);
+    }
 }
