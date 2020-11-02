@@ -133,12 +133,10 @@ public class TicketFacadeTest {
 	@Test
 	public void whenValidTicketIdIsGivenTheDataReturnedByServiceIsReturned() throws InterruptedException {
 		when(ticketService.fetchTicket(eq(uuid))).thenReturn(validTicket);
-		TicketDto ticketDto = sut.fetchTicketFromId(uuid);
-		assertEquals(TicketType.PROBLEM.name(), ticketDto.getTicketType());
-		assertEquals(State.OPENED.name(),ticketDto.getState());
-		assertEquals(DESC,ticketDto.getDesc());
-		assertEquals(TITLE,ticketDto.getTitle());
-	}
+		sut.fetchTicketFromId(uuid);
+		verify(ticketService,times(1)).fetchTicket(eq(uuid));
+		}
+
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {

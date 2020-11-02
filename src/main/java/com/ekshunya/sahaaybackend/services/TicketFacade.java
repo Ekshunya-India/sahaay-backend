@@ -62,13 +62,19 @@ public class TicketFacade {
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketUpdatedFuture = executor.submit(() -> {
                 Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
+                if (ticketToUpdate == null) {
+                    throw new BadDataException("The Incoming Ticket Details were of in-valid format");
+                }
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
                 return this.mainMapper.ticketToTicketDto(updatedTicket);
             });
             return ticketUpdatedFuture.get();
         } catch (ExecutionException exception) {
             log.error(ERROR_MESSAGE, exception);
-            throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+            if (exception.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.BadDataException")) {
+                throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+            }
+            throw new InternalServerException("There was an exception while processing the request to Update a ticket");
         }
     }
 
