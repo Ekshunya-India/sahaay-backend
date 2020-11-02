@@ -3,6 +3,7 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
+import com.ekshunya.sahaaybackend.mapper.MainMapper;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
@@ -22,24 +23,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class TicketFacade {
     private final TicketService ticketService;
+    private final MainMapper mainMapper;
     private final static String ERROR_MESSAGE = "ERROR : There was an Error while processing the request";
 
-    public TicketFacade(final TicketService ticketService) {
+    @Inject
+    public TicketFacade(final TicketService ticketService, final MainMapper mainMapper) {
         this.ticketService = ticketService;
+        this.mainMapper=mainMapper;
     }
 
-    @Inject //TODO there is no Need to first change it to TicketCreateDto -> Ticket -> Bson. Let just change the TicketCreateDtoTo Inherit properties from a base class called Ticket, and can have two-3 Objects which will be the Dto's -> Bson's. Eg: TicketCreatedDto, TicketDetailsDto, MinimalTicketDto to Bson's.
     public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
         Future<Boolean> ticketCreatedAck;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketCreatedAck = executor.submit(() -> {
-                Ticket ticketToSave = TicketMapper.INSTANCE.ticketCreateDtoToTicket(ticketCreateDto);
+                Ticket ticketToSave = this.mainMapper.ticketCreateDtoToTicket(ticketCreateDto);
                 ticketToSave.setId(UUID.randomUUID());
                 //TODO in the next iteration we will change the call with fibers so that only the DB call is inside one of these. Mapper code can be moved out of fiber.
                 return this.ticketService.createANewTicket(ticketToSave);
@@ -56,14 +60,20 @@ public class TicketFacade {
         Future<TicketDto> ticketUpdatedFuture;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketUpdatedFuture = executor.submit(() -> {
-                Ticket ticketToUpdate = TicketMapper.INSTANCE.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
+                Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
+                if (ticketToUpdate == null) {
+                    throw new BadDataException("The Incoming Ticket Details were of in-valid format");
+                }
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
-                return TicketMapper.INSTANCE.ticketToTicketDto(updatedTicket);
+                return this.mainMapper.ticketToTicketDto(updatedTicket);
             });
             return ticketUpdatedFuture.get();
         } catch (ExecutionException exception) {
             log.error(ERROR_MESSAGE, exception);
-            throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+            if (exception.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.BadDataException")) {
+                throw new BadDataException(Arrays.toString(exception.getStackTrace()));
+            }
+            throw new InternalServerException("There was an exception while processing the request to Update a ticket");
         }
     }
 
@@ -73,7 +83,7 @@ public class TicketFacade {
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             updatedTicketFuture = executor.submit(() -> {
                 Ticket existingTicket = this.ticketService.fetchTicket(ticketId);
-                return TicketMapper.INSTANCE.ticketToTicketDto(existingTicket);
+                return this.mainMapper.ticketToTicketDto(existingTicket);
             });
             return updatedTicketFuture.get();
         } catch (ExecutionException e) { //TODO This is wrong. We need to catch the indivizual exception that is nested inside the ExecutionException.
@@ -94,7 +104,7 @@ public class TicketFacade {
             double lng = Double.parseDouble(longitude);
             futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng));
             List<Ticket> openTickets = futureTickets.get();
-            return TicketMapper.INSTANCE.ticketsToTicketDtos(openTickets);
+            return openTickets.stream().map(this.mainMapper::ticketToTicketDto).collect(Collectors.toList());
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
             if(e.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.DataNotFoundException")){
@@ -109,14 +119,21 @@ public class TicketFacade {
 
     //TODO add unit tests to cover this method.
     public boolean updateTicketWithFeed(@NonNull final TicketFeedDto ticketFeedDto) throws InterruptedException {
-        Feed newFeed = FeedMapper.INSTANCE.ticketFeedDtoToFeed(ticketFeedDto);
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
+            Feed newFeed =  this.mainMapper.ticketFeedToTicket(ticketFeedDto);
+            if(newFeed==null){
+                log.error(ERROR_MESSAGE);
+                throw new BadDataException("There was a problem while converting the Data");
+            }
             Future<Long> ticketFuture = executor.submit(() ->
                     this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getId()));
             return ticketFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
+            if(e.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.BadDataException")){
+                throw new BadDataException("There was a problem while converting the Data"); //TODO This rethrow might distort the logs as the logs will show 2 exceptions in place of one.
+            }
             throw new InternalServerException(ERROR_MESSAGE);
         }
     }
@@ -149,6 +166,6 @@ public class TicketFacade {
             log.error(ERROR_MESSAGE, e);
             throw new InternalServerException(ERROR_MESSAGE);
         }
-        return TicketMapper.INSTANCE.ticketsToTicketDtos(ticketDtosToReturn);
+        return ticketDtosToReturn.stream().map(this.mainMapper::ticketToTicketDto).collect(Collectors.toList());
     }
 }

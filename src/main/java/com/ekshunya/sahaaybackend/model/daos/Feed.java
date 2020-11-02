@@ -19,5 +19,5 @@ public class Feed {
 	ZonedDateTime lastUpdated;
 	@NotNull()
 	List<Attachement> attachments;
-	User userId; //Optional
+	UUID userId; //Optional
 }
