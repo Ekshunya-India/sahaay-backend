@@ -31,6 +31,7 @@
         <version.maven-source>3.1.0</version.maven-source>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
         <version.lombok>1.18.16</version.lombok>
+        <powermock.version>2.0.9</powermock.version>
     </properties>
 
     <dependencies>
@@ -260,12 +261,26 @@
         </dependency>
 
         <!-- Test Dependencies -->
+        <!-- TODO : It is sad that we are still using junit4. We need to migrate to jupiter junit soon. -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
     </dependencies>
 
     <build>

@@ -15,6 +15,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.bson.Document;
@@ -39,7 +40,7 @@ public class TicketService {
 
 
     //TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
-    public boolean createANewTicket(final Ticket ticketToSave) {
+    public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
