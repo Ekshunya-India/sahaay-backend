@@ -10,8 +10,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.InsertOneResult;
+import org.bson.Document;
 import org.bson.json.JsonParseException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -49,6 +51,8 @@ public class TicketServiceTest {
     private MongoClient mongoClient;
     @Captor
     private ArgumentCaptor<Ticket> ticketArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Document> documentArgumentCaptor;
     private Ticket validTicket;
     private UUID uuid;
     private Location location;
@@ -83,5 +87,14 @@ public class TicketServiceTest {
     public void updateTicketThrowsBadDataExceptionWhenThereIsAJsonProcessingException() throws JsonProcessingException {
         when(objectMapper.writeValueAsString(eq(validTicket))).thenThrow(new JsonParseException("Bad Data"));
         sut.updateTicket(validTicket);
+    }
+
+    @Test
+    public void upddateTicketSendsDataToMongoDbAndSendsAValidTicketBack() throws JsonProcessingException {
+        when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
+        Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
+        sut.updateTicket(validTicket);
+        verify(tickets, times(1)).findOneAndUpdate(any(), documentArgumentCaptor.capture());
+        assertEquals(documentArgumentCaptor.getValue(), mongoDocumentToUpdate);
     }
 }
