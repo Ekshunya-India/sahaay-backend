@@ -160,9 +160,16 @@ public class TicketFacadeTest {
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
 
 	@Test
-	public void deleteTicketGivenWrongTicketNumberRecivesFalseWhenNoDataPresent() throws InterruptedException {
+	public void deleteTicketGivenRightTicketNumberRecivesTrueAfterDelete() throws InterruptedException {
 		when(ticketService.deleteTicket(eq(uuid),eq(uuid))).thenReturn(1L);
 
 		assertTrue(sut.deleteTicketWithIdForUserId(uuid,uuid));
+	}
+
+	@Test
+	public void deleteTicketGivenWrongTicketNumberRecivesFalseAfterDelete() throws InterruptedException {
+		when(ticketService.deleteTicket(eq(uuid),eq(uuid))).thenReturn(2L);
+
+		assertFalse(sut.deleteTicketWithIdForUserId(uuid,uuid));
 	}
 }
