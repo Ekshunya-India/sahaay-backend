@@ -97,4 +97,12 @@ public class TicketServiceTest {
         verify(tickets, times(1)).findOneAndUpdate(any(), documentArgumentCaptor.capture());
         assertEquals(documentArgumentCaptor.getValue(), mongoDocumentToUpdate);
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void updateTicketPropagatesExceptionInFindOneAndUpdate() throws JsonProcessingException {
+        when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
+        Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
+        when(tickets.findOneAndUpdate(any(),eq(mongoDocumentToUpdate))).thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
+        sut.updateTicket(validTicket);
+    }
 }
