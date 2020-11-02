@@ -24,14 +24,16 @@ public class TicketTicketIdDeleteHandler implements LightHttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-        String ticketId="";
-        try{
-            ticketId = exchange.getPathParameters().get("ticketId").getFirst();
-            boolean ticketDeleted = this.ticketFacade.deleteTicketWithId(ticketId, UUID.randomUUID()); //TODO add logic to get the userId from the Authenticated JWT token.
-            if(ticketDeleted){
+        String ticketInString = "";
+        try {
+            ticketInString = exchange.getPathParameters().get("ticketId").getFirst();
+            UUID ticketId = UUID.fromString(ticketInString);
+            boolean ticketDeleted = this.ticketFacade.deleteTicketWithIdForUserId(ticketId, UUID.randomUUID()); //TODO add logic to get the userId from the Authenticated JWT token.
+            if (ticketDeleted) {
                 exchange.setStatusCode(200);
-            }} catch (DataNotFoundException dataNotFoundException){
-            log.error("There was no Ticket With Id {} in our DB",ticketId);
+            }
+        } catch (DataNotFoundException dataNotFoundException) {
+            log.error("There was no Ticket With Id {} in our DB", ticketInString);
             exchange.setStatusCode(404);
         }
         exchange.endExchange();
