@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -56,9 +57,11 @@ public class TicketServiceTest {
     private ArgumentCaptor<Bson> filterArgumentCaptor;
     @Mock
     private FindIterable<Ticket> findIterable;
+    private Bson FILTER;
     private Ticket validTicket;
     private UUID uuid;
     private Location location;
+    private Feed newFeed;
     @Before
     public void setUp() throws Exception {
         this.uuid = UUID.randomUUID();
@@ -69,6 +72,8 @@ public class TicketServiceTest {
         when(mongoClient.getDatabase(eq("sahaay-db"))).thenReturn(db);
         when(db.getCollection(eq("ticket"), eq(Ticket.class))).thenReturn(tickets);
         when(findIterable.first()).thenReturn(validTicket);
+        newFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
+        FILTER= Filters.eq("id",this.uuid);
     }
 
     @Test
@@ -112,9 +117,24 @@ public class TicketServiceTest {
 
     @Test
     public void validIdSentToTheIdIsGivenToMongoDb(){
-        Bson filter = Filters.eq("id",this.uuid);
-        when(tickets.find(eq(filter),eq(Ticket.class))).thenReturn(findIterable);
+        when(tickets.find(eq(FILTER),eq(Ticket.class))).thenReturn(findIterable);
         Ticket actualTicket =  sut.fetchTicket(uuid);
         assertEquals(validTicket,actualTicket);
+    }
+
+    //TODO here we are propagating the all DB exceptions out of service layer to Facade. Atleast in Facade we need to capture the DB exceptions.
+    @Test(expected = IllegalStateException.class)
+    public void AnyExceptionThrownByTheMongoCollectionIsPropagatedBack(){
+        when(tickets.find(any(Bson.class),eq(Ticket.class))).thenThrow(new IllegalStateException("SOMETHING BAD HAPPENED ALFRED"));
+        sut.fetchTicket(uuid);
+    }
+
+    @Test
+    public void updateWithFeedUpdatesItInMongoDb() throws JsonProcessingException{
+        when(objectMapper.writeValueAsString(eq(newFeed))).thenReturn(new ObjectMapper().writeValueAsString(newFeed));
+        Document feedToAdd = Document.parse(new ObjectMapper().writeValueAsString(newFeed));
+        Bson updates= Updates.push("id.feeds.$.",feedToAdd);
+        sut.fetchTicket(uuid);
+        verify(tickets,times(1)).findOneAndUpdate(eq(FILTER),eq(updates));
     }
 }
