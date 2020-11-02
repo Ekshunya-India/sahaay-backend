@@ -137,4 +137,10 @@ public class TicketServiceTest {
         sut.fetchTicket(uuid);
         verify(tickets,times(1)).findOneAndUpdate(eq(FILTER),eq(updates));
     }
+
+    @Test(expected = BadDataException.class)
+    public void updateWithFeedThrowsBadDataExceptionWhenJsonProcessingIsThrown() throws JsonProcessingException {
+        when(objectMapper.writeValueAsString(eq(newFeed))).thenThrow(new JsonParseException("SOME BAD DATA"));
+        sut.fetchTicket(uuid);
+    }
 }
