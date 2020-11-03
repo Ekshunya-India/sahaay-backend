@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static com.mongodb.client.model.Filters.all;
+import static com.mongodb.client.model.Filters.and;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -142,5 +144,19 @@ public class TicketServiceTest {
     public void updateWithFeedThrowsBadDataExceptionWhenJsonProcessingIsThrown() throws JsonProcessingException {
         when(objectMapper.writeValueAsString(eq(newFeed))).thenThrow(new JsonParseException("SOME BAD DATA"));
         sut.fetchTicket(uuid);
+    }
+
+    @Test
+    public void deleteTicketPropagatesExceptionThrownByMongoDb(){
+        Bson andDeleteBson = and(Filters.eq("id",eq(uuid)), Filters.eq("openedBy",eq(uuid)), all("state", State.values()));
+        sut.deleteTicket(uuid,uuid);
+        verify(tickets,times(1)).deleteOne(eq(andDeleteBson));
+    }
+
+    @Test
+    public void deleteTicketsPassesOnTheIdsToMongoLikeAGoodBoy(){
+        Bson andDeleteBson = and(Filters.eq("id",eq(uuid)), Filters.eq("openedBy",eq(uuid)), all("state", State.values()));
+        when(tickets.deleteOne(eq(andDeleteBson))).thenThrow(new IllegalStateException("SOME THING REALLY BAD"));
+        sut.deleteTicket(uuid,uuid);
     }
 }

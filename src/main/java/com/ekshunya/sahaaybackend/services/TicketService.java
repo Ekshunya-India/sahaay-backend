@@ -3,6 +3,7 @@ package com.ekshunya.sahaaybackend.services;
 import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
+import com.ekshunya.sahaaybackend.model.daos.State;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,8 +24,7 @@ import org.bson.Document;
 import java.util.List;
 import java.util.UUID;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 @Slf4j
 public class TicketService {
@@ -104,8 +104,8 @@ public class TicketService {
     public long deleteTicket(final UUID ticketIdToDelete, final UUID userId) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
-            MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
-            return tickets.deleteOne(and(eq("id",ticketIdToDelete),eq("openedBy",userId))).getDeletedCount();
+            MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class); //
+            return tickets.deleteOne(and(eq("id",ticketIdToDelete),eq("openedBy",userId), all("state", State.values()))).getDeletedCount();
         }
     }
 
