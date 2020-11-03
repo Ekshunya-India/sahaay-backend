@@ -12,7 +12,6 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
-import com.googlecode.jmapper.JMapper;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -140,13 +139,12 @@ public class TicketFacade {
     }
 
     //TODO add unit tests to cover this method.
-    public boolean deleteTicketWithId(@NonNull final String ticketId, @NonNull final UUID userId) throws InterruptedException {
+    public boolean deleteTicketWithIdForUserId(final @NonNull UUID ticketId, @NonNull final UUID userId) throws InterruptedException {
         //TODO delete a Ticket in MongoDB
         ThreadFactory factory = Thread.builder().virtual().factory();
-        UUID ticketIdToDelete = UUID.fromString(ticketId);
         Future<Long> deletedFlagFuture;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketIdToDelete,userId));
+            deletedFlagFuture = executor.submit(() -> this.ticketService.deleteTicket(ticketId,userId));
             return deletedFlagFuture.get().equals(1L);
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
