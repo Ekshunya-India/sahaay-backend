@@ -16,7 +16,6 @@
         <version.slf4j>1.7.25</version.slf4j>
         <version.jose4j>0.6.3</version.jose4j>
         <version.logback>1.2.3</version.logback>
-        <version.junit>4.12</version.junit>
         <version.undertow>2.1.3.Final</version.undertow>
         <version.json-schema-validator>1.0.29</version.json-schema-validator>
         <versions.maven-version>2.4</versions.maven-version>
@@ -31,7 +30,8 @@
         <version.maven-source>3.1.0</version.maven-source>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
         <version.lombok>1.18.16</version.lombok>
-        <powermock.version>2.0.9</powermock.version>
+        <version.junit>4.12</version.junit>
+        <powermock.version>2.0.7</powermock.version>
     </properties>
 
     <dependencies>
@@ -247,14 +247,6 @@
             <version>${version.lombok}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>2.0.2-beta</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.googlecode.jmapper-framework</groupId>
             <artifactId>jmapper-core</artifactId>
@@ -282,6 +274,14 @@
                 <version>${powermock.version}</version>
                 <scope>test</scope>
             </dependency>
+        <!-- https://github.com/mockito/mockito/issues/1606 TODO: byte buddy was added because of a bug in the mockito -->
+        <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.10.18</version>
+        </dependency>
+
     </dependencies>
 
     <build>
