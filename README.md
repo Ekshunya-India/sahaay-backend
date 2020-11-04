@@ -57,9 +57,8 @@ directory and double click on exec : exec.
                         OR
 Run *mvn install exec:exec* from Terminal. 
 
-Shout out : https://en.wikipedia.org/wiki/Pieter_Hintjens
-            https://oauth.net/2/
-            https://www.mongodb.com/
-            https://www.networknt.com/
-
-ToDo: Currently all the DB calls are Synchronus but put inside a Java Fiber/Kotlin CoRoutines. So a fiber might be blocked but not the thread was the thinking.
+Shout out : 
+1. https://en.wikipedia.org/wiki/Pieter_Hintjens
+1. https://oauth.net/2/
+1. https://www.mongodb.com/
+1. https://www.networknt.com/
