@@ -345,6 +345,9 @@
                         <version>${version.maven-surefire}</version>
                     </dependency>
                 </dependencies>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
