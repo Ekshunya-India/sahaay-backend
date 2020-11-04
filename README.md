@@ -44,6 +44,19 @@ This will be a light4j-rest application. This will be fully Asynchornus with the
 * The corresponding cucumber tests is present at [BDD Tests](https://github.com/Ekshunya-India/sahaay-bdd)
 * The corresponding sahaay coins is present at[Sahaay Coins](https://github.com/Ekshunya-India/sahaay-coins)
 
+### Running this Project.
+##### PreReq:
+1. Java 16 JDK. Download from [Java JDK Download](https://jdk.java.net/16/)
+1. Maven Install. [Maven Download Page](http://maven.apache.org/download.cgi#)
+1. Intellij IDE 2020 EAP Install. [Intellij EAP Download](https://www.jetbrains.com/idea/nextversion/#section=mac)
+1. MongoDB Install. [MongoDB Community Server](https://www.mongodb.com/try/download/community)
+
+##### Maven Run:
+exec-maven-plugin gives the ability to execute the project. In the IDE maven Window go to Plugins
+directory and double click on exec : exec.
+                        OR
+Run *mvn install exec:exec* from Terminal. 
+
 Shout out : https://en.wikipedia.org/wiki/Pieter_Hintjens
             https://oauth.net/2/
             https://www.mongodb.com/
