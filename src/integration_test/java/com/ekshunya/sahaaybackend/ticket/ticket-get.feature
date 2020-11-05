@@ -6,7 +6,8 @@ Feature: Sahaay Backend Ticket Get Feature
     Given path 'echo', 'jwt', 'resource'
     And url sahaayBackendUrl
     And path /ticket
-    And header Authorization = 'Bearer ' + accessToken
+    And header Authorization = 'Bearer ' + authToken
+    And request read('ticket_create.json')
     When method POST
     Then status 201
     And match response == 'created'
