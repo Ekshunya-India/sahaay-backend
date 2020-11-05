@@ -33,7 +33,6 @@ Currently the roadmap looks like the following:
 * People of the community can also vote on problems/help/requests/stories. Voting is for priority. We will have 3-4 priority throught the app.
 * Problems are listed anonymous. No data linking a user to the problem is stored at back-end. Just in the android local. The android app can have secret URL of some sorts which can be used to edit the problem. Only the User will have that URL on the android device. 
 * Action items on the tickets. Any user/groups of user can pick up the problem/request/help and work on it. After the work the users is required to provide evidence of the solution/help given to close the ticket.
-* 
 
 This will be a light4j-rest application. This will be fully Asynchornus with the use of Java Fibers. More at https://www.youtube.com/watch?v=fOEPEXTpbJA , http://jdk.java.net/loom/ and https://user-images.githubusercontent.com/5641222/97071026-c7060580-15fa-11eb-8046-d11feedb2039.png , https://user-images.githubusercontent.com/5641222/97071028-c9685f80-15fa-11eb-8a8e-15995a32ecd6.png. 
 
