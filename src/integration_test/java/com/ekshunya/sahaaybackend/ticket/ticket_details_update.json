@@ -1,0 +1,15 @@
+{
+  "title": "A Very Bad Pot Hole in the main road",
+  "desc": "some new desc",
+  "ticketType": "PROBLEM",
+  "priority": "P1",
+  "currentState": "CANCELLED",
+  "visibility": 0,
+  "expectedEnd": "2020-12-05T11:54:44.587Z",
+  "location": {
+    "lng": "22.00",
+    "lat": "23.00"
+  },
+  "ticketAssignedTo": "32f5457e-7b74-4869-88fe-d37153bfc588",
+  "actualEnd": "2020-12-25T11:54:44.587Z"
+}
