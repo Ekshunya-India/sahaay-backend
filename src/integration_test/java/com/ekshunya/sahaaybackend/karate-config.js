@@ -7,8 +7,8 @@ function fn() {
   var config = { // base config JSON
     appId: 'my.app.id',
     appSecret: 'my.secret',
-    someUrlBase: 'https://some-host.com/v1/auth/',
-    anotherUrlBase: 'https://another-host.com/v1/'
+    sahaayBackendUrl: 'https://some-host.com/v1/auth/',  //TODO : Add the proper URL for sahaay-backend and sahaay-oAuth2
+    sahaayoAuthUrl: 'https://another-host.com/v1/'
   };
   if (env == 'stage') {
     // over-ride only those that need to be
