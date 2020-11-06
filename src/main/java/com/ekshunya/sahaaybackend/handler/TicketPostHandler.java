@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.networknt.handler.LightHttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HttpString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class TicketPostHandler implements LightHttpHandler {
         this.objectMapper = objectMapper;
     }
 
+    //TODO currently i am not sure if all the code of ticketFacade is in the main thread. It will be better if we move this to the worker thread of undertow by using exchange.someFUnctionTOCallTOWorkerThread(Our code to call the facade and get the results.)
+
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes(
@@ -36,7 +39,8 @@ public class TicketPostHandler implements LightHttpHandler {
                     try {
                         TicketCreateDto ticketCreateDto = this.objectMapper.readValue(bytes, TicketCreateDto.class);
                         if (this.ticketFacade.createTicket(ticketCreateDto)){
-                            httpServerExchange.getResponseSender().send(ticketCreateDto.getId().toString());
+                            String requestUrl = exchange.getRequestURI();
+                            httpServerExchange.getResponseHeaders().add(HttpString.tryFromString("Location"),requestUrl+ticketCreateDto.getId().toString());
                             httpServerExchange.setStatusCode(201);
                         }else{
                             log.error("There was a problem while creating the new Ticket");

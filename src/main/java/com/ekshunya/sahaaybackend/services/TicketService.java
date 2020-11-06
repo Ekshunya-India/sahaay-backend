@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.*;
 
+//TODO add a Kafka Event which will be helpful in recognizing every transcation to the Database so that Sahaay Coins can be linked here.
 @Slf4j
 public class TicketService {
     private final MongoClientSettings clientSettings;
