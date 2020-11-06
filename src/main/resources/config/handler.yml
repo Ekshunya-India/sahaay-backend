@@ -76,7 +76,7 @@ handlers:
   - com.ekshunya.sahaaybackend.handler.UserPhoneAddPostHandler
   - com.ekshunya.sahaaybackend.handler.UserPhoneVerifyPostHandler
 
-
+#TODO : I screwed up. The Rename fot the Ticket Feed Handler has not yet been done in the main handler.yml.
 chains:
   default:
     - exception
