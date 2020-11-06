@@ -22,7 +22,7 @@ public class TicketAssignedToUserIdGetHandler implements LightHttpHandler {
     }
 
     @Override
-    public void handleRequest(HttpServerExchange exchange) throws Exception {
+    public void handleRequest(final HttpServerExchange exchange) throws Exception {
         if (exchange.isInIoThread()) {
             exchange.dispatch(this);
             return;
