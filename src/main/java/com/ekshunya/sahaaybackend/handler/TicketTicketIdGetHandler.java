@@ -28,7 +28,10 @@ public class TicketTicketIdGetHandler implements LightHttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
-
+        if (exchange.isInIoThread()) {
+            exchange.dispatch(this);
+            return;
+        }
         try{
             UUID ticketId = UUID.fromString(exchange.getPathParameters().get("ticketId").getFirst());
             TicketDto ticketDto = this.ticketFacade.fetchTicketFromId(ticketId);

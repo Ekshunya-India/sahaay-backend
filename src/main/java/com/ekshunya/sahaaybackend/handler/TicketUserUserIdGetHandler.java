@@ -26,6 +26,10 @@ public class TicketUserUserIdGetHandler implements LightHttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
+        if (exchange.isInIoThread()) {
+            exchange.dispatch(this);
+            return;
+        }
         String userId = exchange.getPathParameters().get("userId").getFirst();
         List<TicketDto> tickets = this.ticketFacade.fetchAllTicketsForUser(userId);
         exchange.setStatusCode(200);
