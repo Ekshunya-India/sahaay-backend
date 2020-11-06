@@ -33,7 +33,6 @@ Currently the roadmap looks like the following:
 * People of the community can also vote on problems/help/requests/stories. Voting is for priority. We will have 3-4 priority throught the app.
 * Problems are listed anonymous. No data linking a user to the problem is stored at back-end. Just in the android local. The android app can have secret URL of some sorts which can be used to edit the problem. Only the User will have that URL on the android device. 
 * Action items on the tickets. Any user/groups of user can pick up the problem/request/help and work on it. After the work the users is required to provide evidence of the solution/help given to close the ticket.
-* 
 
 This will be a light4j-rest application. This will be fully Asynchornus with the use of Java Fibers. More at https://www.youtube.com/watch?v=fOEPEXTpbJA , http://jdk.java.net/loom/ and https://user-images.githubusercontent.com/5641222/97071026-c7060580-15fa-11eb-8046-d11feedb2039.png , https://user-images.githubusercontent.com/5641222/97071028-c9685f80-15fa-11eb-8a8e-15995a32ecd6.png. 
 
@@ -44,9 +43,21 @@ This will be a light4j-rest application. This will be fully Asynchornus with the
 * The corresponding cucumber tests is present at [BDD Tests](https://github.com/Ekshunya-India/sahaay-bdd)
 * The corresponding sahaay coins is present at[Sahaay Coins](https://github.com/Ekshunya-India/sahaay-coins)
 
-Shout out : https://en.wikipedia.org/wiki/Pieter_Hintjens
-            https://oauth.net/2/
-            https://www.mongodb.com/
-            https://www.networknt.com/
+### Running this Project.
+##### PreReq:
+1. Java 16 JDK. Download from [Java JDK Download](https://jdk.java.net/16/)
+1. Maven Install. [Maven Download Page](http://maven.apache.org/download.cgi#)
+1. Intellij IDE 2020 EAP Install. [Intellij EAP Download](https://www.jetbrains.com/idea/nextversion/#section=mac)
+1. MongoDB Install. [MongoDB Community Server](https://www.mongodb.com/try/download/community)
 
-ToDo: Currently all the DB calls are Synchronus but put inside a Java Fiber/Kotlin CoRoutines. So a fiber might be blocked but not the thread was the thinking.
+##### Maven Run:
+exec-maven-plugin gives the ability to execute the project. In the IDE maven Window go to Plugins
+directory and double click on exec : exec.
+                        OR
+Run *mvn install exec:exec* from Terminal. 
+
+Shout out : 
+1. https://en.wikipedia.org/wiki/Pieter_Hintjens
+1. https://oauth.net/2/
+1. https://www.mongodb.com/
+1. https://www.networknt.com/

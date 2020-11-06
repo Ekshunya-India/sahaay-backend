@@ -7,6 +7,7 @@ import java.util.List;
 
 @Value
 public class TicketDto  {
+    String id;
     LocationDto location;
     String expectedEnd;
     int visibility;
