@@ -56,6 +56,11 @@ directory and double click on exec : exec.
                         OR
 Run *mvn install exec:exec* from Terminal. 
 
+##### Integration Test:
+Integration test has been written using a new framework called karate. It is a very nice Cucumber Styled BDD framework.
+
+##### 
+
 Shout out : 
 1. https://en.wikipedia.org/wiki/Pieter_Hintjens
 1. https://oauth.net/2/

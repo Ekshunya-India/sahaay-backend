@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.Updates;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -40,20 +41,22 @@ public class TicketService {
 
 
     //TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
-    public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
+        public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
+            ticketToSave.setId(UUID.randomUUID());
             return tickets.insertOne(ticketToSave).wasAcknowledged();
         }
     }
 
-    public Ticket updateTicket(final Ticket ticketToUpdate) {
+    public Ticket updateTicket(@NonNull final Ticket ticketToUpdate) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
             Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(ticketToUpdate));
-            return tickets.findOneAndUpdate(eq("id", ticketToUpdate.getId()), mongoDocumentToUpdate);
+            FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true);
+            return tickets.findOneAndUpdate(eq("id", ticketToUpdate.getId()), mongoDocumentToUpdate, options);
         } catch (JsonProcessingException e) {
             log.error(ERROR);
             throw new BadDataException("There was an error while converting the data to Json format");
