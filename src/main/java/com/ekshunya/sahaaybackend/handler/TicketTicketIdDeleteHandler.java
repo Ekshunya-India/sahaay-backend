@@ -24,6 +24,10 @@ public class TicketTicketIdDeleteHandler implements LightHttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
+        if (exchange.isInIoThread()) {
+            exchange.dispatch(this);
+            return;
+        }
         String ticketInString = "";
         try {
             ticketInString = exchange.getPathParameters().get("ticketId").getFirst();

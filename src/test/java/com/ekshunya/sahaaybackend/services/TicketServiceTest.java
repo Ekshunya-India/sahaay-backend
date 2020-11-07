@@ -173,4 +173,9 @@ public class TicketServiceTest {
         when(tickets.deleteOne(eq(andDeleteBson))).thenThrow(new IllegalStateException("SOME THING REALLY BAD"));
         sut.deleteTicket(uuid,uuid);
     }
+
+    @Test
+    public void validNumberNotGivenToLimitThenGivesBack20Results(){
+
+    }
 }

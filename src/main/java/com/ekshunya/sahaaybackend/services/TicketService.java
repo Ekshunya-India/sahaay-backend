@@ -10,21 +10,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.Updates;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Sorts.ascending;
 
 //TODO add a Kafka Event which will be helpful in recognizing every transcation to the Database so that Sahaay Coins can be linked here.
 @Slf4j
@@ -41,20 +41,22 @@ public class TicketService {
 
 
     //TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
-    public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
+        public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
+            ticketToSave.setId(UUID.randomUUID());
             return tickets.insertOne(ticketToSave).wasAcknowledged();
         }
     }
 
-    public Ticket updateTicket(final Ticket ticketToUpdate) {
+    public Ticket updateTicket(@NonNull final Ticket ticketToUpdate) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
             Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(ticketToUpdate));
-            return tickets.findOneAndUpdate(eq("id", ticketToUpdate.getId()), mongoDocumentToUpdate);
+            FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true);
+            return tickets.findOneAndUpdate(eq("id", ticketToUpdate.getId()), mongoDocumentToUpdate, options);
         } catch (JsonProcessingException e) {
             log.error(ERROR);
             throw new BadDataException("There was an error while converting the data to Json format");
@@ -110,8 +112,27 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> fetchAllOpenTicketsForUser(final UUID userId) {
-        //TODO put inside a Java Fiber the call to MongoDB.
-        throw new NotImplementedException("Yet to Implement");
+    public List<Ticket> fetchAllOpenTicketsForUser(@NonNull final UUID userId,
+                                                           @NonNull final String sortBy,
+                                                           @NonNull final String greaterThanValue,
+                                                           @NonNull final String limitValuesTo) {
+        int limit;
+        try{
+            limit = Integer.parseInt(limitValuesTo);
+        } catch (NumberFormatException numberFormatException){
+            limit=20;
+        }
+        try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
+            MongoDatabase db = mongoClient.getDatabase("sahaay-db");
+            MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class); //
+            List<Ticket> ticketsToReturn = new ArrayList<>();
+            FindIterable<Ticket> ticketFindIterable;
+            //TODO currently the we assume we need only in Awscending order. This needs to change when the user wants in anotother order.
+            ticketFindIterable = tickets.find(and(eq("openedBy", userId),gt(sortBy,greaterThanValue),ascending(sortBy))).limit(limit);
+            while (ticketFindIterable.cursor().hasNext()){
+                ticketsToReturn.add(ticketFindIterable.cursor().next());
+            }
+            return ticketsToReturn;
+        }
     }
 }

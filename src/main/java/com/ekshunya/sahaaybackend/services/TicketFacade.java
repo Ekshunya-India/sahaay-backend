@@ -153,13 +153,17 @@ public class TicketFacade {
     }
 
     //TODO add unit tests to cover this method.
-    public List<TicketDto> fetchAllTicketsForUser(@NonNull final String userIdAsString) throws InterruptedException {
+    public List<TicketDto> fetchAllTicketsPaginatedForUser(@NonNull final String userIdAsString,
+                                                           @NonNull final String sortBy,
+                                                           @NonNull final String greaterThanValue,
+                                                           @NonNull final String limitValuesTo) throws InterruptedException {
         ThreadFactory factory = Thread.builder().virtual().factory();
         UUID userId = UUID.fromString(userIdAsString);
         Future<List<Ticket>> ticketsFuture;
         List<Ticket> ticketDtosToReturn;
+
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
-            ticketsFuture = executor.submit(() -> this.ticketService.fetchAllOpenTicketsForUser(userId));
+            ticketsFuture = executor.submit(() -> this.ticketService.fetchAllOpenTicketsForUser(userId, sortBy, greaterThanValue,limitValuesTo));
             ticketDtosToReturn = ticketsFuture.get();
         } catch (ExecutionException e) {
             log.error(ERROR_MESSAGE, e);
