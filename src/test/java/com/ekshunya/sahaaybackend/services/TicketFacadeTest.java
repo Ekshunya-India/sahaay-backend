@@ -135,26 +135,26 @@ public class TicketFacadeTest {
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {
-		sut.fetchAllTicketOfType("SOME_TICKETTYPE","20.00","30.00");
+		sut.fetchAllTicket("SOME_TICKETTYPE","20.00","30.00");
 	}
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataExceptionWhenParsingWrongDouble() throws InterruptedException {
-		sut.fetchAllTicketOfType("PROBLEM","SOME_BAD_DATA","30.00");
+		sut.fetchAllTicket("PROBLEM","SOME_BAD_DATA","30.00");
 	}
 
 	@Test(expected = DataNotFoundException.class)
 	public void whenDataNotFoundExceptionIsThrownInExcecutorThenItIsPropagated() throws InterruptedException {
 		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
 
-		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
 	}
 
 	@Test
 	public void validDataGivenToFetchAllTicketsValidDataIsPassedOnToService() throws InterruptedException {
 		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenReturn(new ArrayList<>());
 
-		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
 
 		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
 	}

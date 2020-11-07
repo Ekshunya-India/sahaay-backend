@@ -71,7 +71,12 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> fetchAllOpenedTicket(final TicketType actualTicketType, final double latitude, final double longitude) {
+    public List<Ticket> fetchAllOpenedTicket(@NonNull final TicketType actualTicketType,
+                                             @NonNull final double latitude,
+                                             @NonNull final double longitude,
+                                             @NonNull final String sortBy,
+                                             @NonNull final String valueOfLastElement,
+                                             @NonNull final String limitValuesTo) {
         //TODO put inside a Java Fiber. If 16 SDK does not work out then we can put this inside a Kotlin Global Async
         //TODO do a pagination using bucket pattern in mongo DB.
         // https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1

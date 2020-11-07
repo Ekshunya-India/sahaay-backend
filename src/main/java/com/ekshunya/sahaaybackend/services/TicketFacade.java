@@ -94,15 +94,20 @@ public class TicketFacade {
             throw new BadDataException("There was an error while converting the data from Database"); //TODO this is wrong. This needs to change.
         }
     }
-
-    public List<TicketDto> fetchAllTicketOfType(@NonNull final String ticketType, @NonNull final String latitude, @NonNull final String longitude) throws InterruptedException {
+//TODO we need to also add the logic of valueOfLastElement being "NO_VALUE". in the service that is.
+    public List<TicketDto> fetchAllTicket(@NonNull final String ticketType,
+                                          @NonNull final String latitude,
+                                          @NonNull final String longitude,
+                                          @NonNull final String sortBy,
+                                          @NonNull final String valueOfLastElement,
+                                          @NonNull final String limitValuesTo) throws InterruptedException {
         Future<List<Ticket>> futureTickets;
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             TicketType actualTicketType = TicketType.valueOf(ticketType);
             double lat = Double.parseDouble(latitude);
             double lng = Double.parseDouble(longitude);
-            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng));
+            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng, sortBy, valueOfLastElement, limitValuesTo));
             List<Ticket> openTickets = futureTickets.get();
             return openTickets.stream().map(this.mainMapper::ticketToTicketDto).collect(Collectors.toList());
         } catch (ExecutionException e) {
