@@ -5,7 +5,10 @@ import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.mapper.MainMapper;
 import com.ekshunya.sahaaybackend.model.daos.*;
-import com.ekshunya.sahaaybackend.model.dtos.*;
+import com.ekshunya.sahaaybackend.model.dtos.LocationDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
+import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import io.undertow.server.handlers.form.FormData;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +38,9 @@ public class TicketFacadeTest {
 	private ArgumentCaptor<Feed> feedCaptor;
 	@Mock
 	private MainMapper mainMapper;
+	private String sortBy;
+	private String valueOfLastElement;
+	private String limitValuesTo;
 	private TicketCreateDto ticketCreateDto;
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
@@ -52,6 +58,9 @@ public class TicketFacadeTest {
 
 	@Before
 	public void setUp() throws Exception {
+		sortBy="created";
+		limitValuesTo="20";
+		valueOfLastElement = "SOME_VALUE";
 		locationDto = new LocationDto(22.00, 23.00);
 		ticketCreateDto = new TicketCreateDto(uuid,locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
 				DESC, "PROBLEM", TITLE, "P1", USER_ID);
@@ -135,28 +144,29 @@ public class TicketFacadeTest {
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {
-		sut.fetchAllTicket("SOME_TICKETTYPE","20.00","30.00");
+		sut.fetchAllTicket("SOME_TICKETTYPE",String.valueOf(LAT),String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 	}
 
 	@Test(expected = BadDataException.class)
 	public void whenInValidDataGivenToFetchThrowsBadDataExceptionWhenParsingWrongDouble() throws InterruptedException {
-		sut.fetchAllTicket("PROBLEM","SOME_BAD_DATA","30.00");
+		sut.fetchAllTicket("PROBLEM","SOME_BAD_DATA",String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 	}
 
 	@Test(expected = DataNotFoundException.class)
 	public void whenDataNotFoundExceptionIsThrownInExcecutorThenItIsPropagated() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
+		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo)))
+				.thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
 
-		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 	}
 
 	@Test
 	public void validDataGivenToFetchAllTicketsValidDataIsPassedOnToService() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenReturn(new ArrayList<>());
+		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo))).thenReturn(new ArrayList<>());
 
-		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 
-		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
+		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo));
 	}
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
 
