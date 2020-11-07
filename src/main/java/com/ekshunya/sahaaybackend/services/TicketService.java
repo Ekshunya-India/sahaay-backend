@@ -77,11 +77,24 @@ public class TicketService {
                                              @NonNull final String sortBy,
                                              @NonNull final String valueOfLastElement,
                                              @NonNull final String limitValuesTo) {
-        //TODO put inside a Java Fiber. If 16 SDK does not work out then we can put this inside a Kotlin Global Async
-        //TODO do a pagination using bucket pattern in mongo DB.
-        // https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
-        // https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
-        throw new NotImplementedException("Yet to Implement");
+        int limit= parseLimit(limitValuesTo);
+        try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
+            MongoDatabase db = mongoClient.getDatabase("sahaay-db");
+            MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
+            List<Ticket> ticketsToReturn = new ArrayList<>();
+            FindIterable<Ticket> ticketFindIterable;
+            //TODO currently the we assume we need only in Ascending order. This needs to change when the user wants in another order.
+            ticketFindIterable = tickets.find(and(
+                    eq("lat", latitude),
+                    eq("lng",longitude),
+                    eq("ticketType",actualTicketType),
+                    gt(sortBy,valueOfLastElement),
+                    ascending(sortBy))).limit(limit);
+            while (ticketFindIterable.cursor().hasNext()){
+                ticketsToReturn.add(ticketFindIterable.cursor().next());
+            }
+            return ticketsToReturn;
+        }
     }
 
     /**
@@ -121,12 +134,7 @@ public class TicketService {
                                                            @NonNull final String sortBy,
                                                            @NonNull final String greaterThanValue,
                                                            @NonNull final String limitValuesTo) {
-        int limit;
-        try{
-            limit = Integer.parseInt(limitValuesTo);
-        } catch (NumberFormatException numberFormatException){
-            limit=20;
-        }
+        int limit= parseLimit(limitValuesTo);
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class); //
@@ -138,6 +146,15 @@ public class TicketService {
                 ticketsToReturn.add(ticketFindIterable.cursor().next());
             }
             return ticketsToReturn;
+        }
+    }
+
+
+    private int parseLimit(@NonNull final String limit){
+        try{
+            return Integer.parseInt(limit);
+        } catch (NumberFormatException numberFormatException){
+           return 20;
         }
     }
 }

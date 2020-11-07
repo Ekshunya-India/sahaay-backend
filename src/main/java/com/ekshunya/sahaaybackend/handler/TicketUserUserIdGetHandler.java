@@ -43,12 +43,9 @@ public class TicketUserUserIdGetHandler implements LightHttpHandler {
         String loggedInUserId = auditInfo.get(Constants.USER_ID_STRING).toString();  //TODO this is not be valid. accroding to the excamplke this called_id seems to be the actual constant where the called id is called. https://github.com/networknt/light-4j/blob/master/metrics/src/main/java/com/networknt/metrics/MetricsHandler.java#L131
         String loggedInUserType = auditInfo.get(Constants.USER_TYPE_STRING).toString();
         String ticketOpenedUserId = exchange.getPathParameters().get("userId").getFirst();
-        String sortBy = exchange.getQueryParameters().get("sortby") == null ?
-                "NOVALUE" : exchange.getQueryParameters().get("sortby").getFirst();
-        String lastValueOfLastSearch = exchange.getQueryParameters().get("last") == null ?
-                "NO_VALUE" : exchange.getQueryParameters().get("last").getFirst();
-        String limitValuesTo = exchange.getQueryParameters().get("limit") == null ?
-                "NO_VALUE" : exchange.getQueryParameters().get("limit").getFirst();
+        String sortBy = HandlerHelper.fetchSortByFrom(exchange);
+        String lastValueOfLastSearch = HandlerHelper.fetchLastDisplayElement(exchange);
+        String limitValuesTo = HandlerHelper.fetchLimitFrom(exchange);
         if (loggedInUserType.equals(UserType.CUSTOMER.name()) || loggedInUserType.equals(UserType.PARTNER.name())) {
             if (loggedInUserId.equals(ticketOpenedUserId)) {
                 throw new IllegalAccessException("This user is not authorized to access data of other User");
