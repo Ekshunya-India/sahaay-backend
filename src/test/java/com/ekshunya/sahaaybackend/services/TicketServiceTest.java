@@ -18,7 +18,6 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -71,6 +70,7 @@ public class TicketServiceTest {
     private UpdateResult updateResult;
     @Mock
     private DeleteResult deleteResult;
+    private static final FindOneAndUpdateOptions UPSERT_OPTIONS = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
     private Bson FILTER;
     private Ticket validTicket;
     private UUID uuid;
@@ -117,7 +117,6 @@ public class TicketServiceTest {
 
     @Test
     public void upddateTicketSendsDataToMongoDbAndSendsAValidTicketBack() throws JsonProcessingException {
-        FindOneAndUpdateOptions upsertOptions = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
         when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
         Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
         sut.updateTicket(validTicket);
@@ -125,12 +124,12 @@ public class TicketServiceTest {
        // assertEquals(documentArgumentCaptor.getValue(), mongoDocumentToUpdate); //TODO i do not like this change. This does not capture and verify the actual document. That is not a valid test. But for some reason argumentcapture.capture() is not working.
     }
 
-    @Ignore
     @Test(expected = IllegalStateException.class)
     public void updateTicketPropagatesExceptionInFindOneAndUpdate() throws JsonProcessingException {
         when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
         Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
-        when(tickets.findOneAndUpdate(any(),eq(mongoDocumentToUpdate))).thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
+        when(tickets.findOneAndUpdate(eq(Filters.eq("id", uuid)),any(Document.class),any(FindOneAndUpdateOptions.class))) //TODO this needs to chamge. We need to capture the document and verify and also equate the FindOneAndUpdateOptions.
+                .thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
         sut.updateTicket(validTicket);
     }
 
