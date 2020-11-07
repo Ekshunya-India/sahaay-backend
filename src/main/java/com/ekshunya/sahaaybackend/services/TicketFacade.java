@@ -37,10 +37,10 @@ public class TicketFacade {
         this.mainMapper=mainMapper;
     }
 
-    public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
+    public UUID createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Future<Boolean> ticketCreatedAck;
+        Future<UUID> ticketCreatedAck;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketCreatedAck = executor.submit(() -> {
                 Ticket ticketToSave = this.mainMapper.ticketCreateDtoToTicket(ticketCreateDto);

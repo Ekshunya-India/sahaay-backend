@@ -41,12 +41,14 @@ public class TicketService {
 
 
     //TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
-        public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
+        public UUID createANewTicket(@NonNull final Ticket ticketToSave) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
-            ticketToSave.setId(UUID.randomUUID());
-            return tickets.insertOne(ticketToSave).wasAcknowledged();
+            UUID idOfTheSavedTicket = UUID.randomUUID();
+            ticketToSave.setId(idOfTheSavedTicket);
+            tickets.insertOne(ticketToSave);
+            return idOfTheSavedTicket;
         }
     }
 

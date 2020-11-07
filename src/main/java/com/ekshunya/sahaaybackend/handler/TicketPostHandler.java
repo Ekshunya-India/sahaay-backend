@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
 For more information on how to write business handlers, please check the link below.
@@ -38,14 +39,10 @@ public class TicketPostHandler implements LightHttpHandler {
                 (httpServerExchange, bytes) -> {
                     try {
                         TicketCreateDto ticketCreateDto = this.objectMapper.readValue(bytes, TicketCreateDto.class);
-                        if (this.ticketFacade.createTicket(ticketCreateDto)){
-                            String requestUrl = exchange.getRequestURI();
-                            httpServerExchange.getResponseHeaders().add(HttpString.tryFromString("Location"),requestUrl+ticketCreateDto.getId().toString());
+                        UUID idOfTheSavedResource =this.ticketFacade.createTicket(ticketCreateDto);
+                            String requestUrl = exchange.getHostAndPort();
+                            httpServerExchange.getResponseHeaders().add(HttpString.tryFromString("Location"),requestUrl+"/ticket/"+idOfTheSavedResource);
                             httpServerExchange.setStatusCode(201);
-                        }else{
-                            log.error("There was a problem while creating the new Ticket");
-                            httpServerExchange.setStatusCode(500);
-                        }
                     } catch (IOException e) {
                         log.error(Arrays.toString(e.getStackTrace()));
                         httpServerExchange.setStatusCode(400);
