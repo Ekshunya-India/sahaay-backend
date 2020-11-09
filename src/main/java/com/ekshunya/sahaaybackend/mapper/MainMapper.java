@@ -8,6 +8,7 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.google.inject.Inject;
 import com.googlecode.jmapper.JMapper;
+import lombok.NonNull;
 
 public class MainMapper {
     private final JMapper<Ticket, TicketCreateDto> ticketTicketCreateDtoJMapper;
@@ -26,19 +27,19 @@ public class MainMapper {
         this.ticketFeedDtoToFeed = ticketFeedDtoToFeed;
     }
 
-    public TicketDto ticketToTicketDto(final Ticket ticket) {
+    public TicketDto ticketToTicketDto(@NonNull final Ticket ticket) {
         return this.ticketToTicketDtoMapper.getDestination(ticket);
     }
 
-    public Feed ticketFeedToTicket(final TicketFeedDto feedDto) {
+    public Feed ticketFeedToTicket(@NonNull final TicketFeedDto feedDto) {
         return this.ticketFeedDtoToFeed.getDestination(feedDto);
     }
 
-    public Ticket ticketDetailsUpdateDtoToTicket(final TicketDetailsUpdateDto ticketDetailsUpdateDto) {
+    public Ticket ticketDetailsUpdateDtoToTicket(@NonNull final TicketDetailsUpdateDto ticketDetailsUpdateDto) {
         return this.ticketDetailsMapper.getDestination(ticketDetailsUpdateDto);
     }
 
-    public Ticket ticketCreateDtoToTicket(final TicketCreateDto ticketCreateDto) {
+    public Ticket ticketCreateDtoToTicket(@NonNull final TicketCreateDto ticketCreateDto) {
         return this.ticketTicketCreateDtoJMapper.getDestination(ticketCreateDto);
     }
 }

@@ -60,9 +60,11 @@ public class TicketFacade {
         Future<TicketDto> ticketUpdatedFuture;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketUpdatedFuture = executor.submit(() -> {
+                log.info("******************");
+                log.info(this.mainMapper.toString());
                 Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
                 if (ticketToUpdate == null) {
-                    throw new BadDataException("The Incoming Ticket Details were of in-valid format");
+                    throw new BadDataException("ERROR : The Incoming Ticket Details were of in-valid format");
                 }
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
                 return this.mainMapper.ticketToTicketDto(updatedTicket);
@@ -73,7 +75,7 @@ public class TicketFacade {
             if (exception.getMessage().contains("com.ekshunya.sahaaybackend.exceptions.BadDataException")) {
                 throw new BadDataException(Arrays.toString(exception.getStackTrace()));
             }
-            throw new InternalServerException("There was an exception while processing the request to Update a ticket");
+            throw new InternalServerException("ERROR : There was an exception while processing the request to Update a ticket");
         }
     }
 
@@ -91,7 +93,7 @@ public class TicketFacade {
                 log.error(ERROR_MESSAGE,e);
                 throw new DataNotFoundException(e.getMessage());
             }
-            throw new BadDataException("There was an error while converting the data from Database"); //TODO this is wrong. This needs to change.
+            throw new BadDataException("ERROR : There was an error while converting the data from Database"); //TODO this is wrong. This needs to change.
         }
     }
 
