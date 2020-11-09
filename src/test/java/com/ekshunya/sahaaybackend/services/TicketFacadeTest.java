@@ -154,7 +154,7 @@ public class TicketFacadeTest {
 
 	@Test(expected = DataNotFoundException.class)
 	public void whenDataNotFoundExceptionIsThrownInExcecutorThenItIsPropagated() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo)))
+		when(ticketService.fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo)))
 				.thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
 
 		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
@@ -162,11 +162,11 @@ public class TicketFacadeTest {
 
 	@Test
 	public void validDataGivenToFetchAllTicketsValidDataIsPassedOnToService() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo))).thenReturn(new ArrayList<>());
+		when(ticketService.fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo))).thenReturn(new ArrayList<>());
 
 		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 
-		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo));
+		verify(ticketService,times(1)).fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo));
 	}
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
 

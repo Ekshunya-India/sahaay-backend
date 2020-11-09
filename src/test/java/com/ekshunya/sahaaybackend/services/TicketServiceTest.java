@@ -18,6 +18,7 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -36,8 +37,7 @@ import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.all;
 import static com.mongodb.client.model.Filters.and;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -63,14 +63,18 @@ public class TicketServiceTest {
     @Captor
     private ArgumentCaptor<Ticket> ticketArgumentCaptor;
     @Captor
-    private ArgumentCaptor<Document> documentArgumentCaptor;
+    private ArgumentCaptor<Bson> documentArgumentCaptor;
     @Mock
     private FindIterable<Ticket> findIterable;
     @Mock
     private UpdateResult updateResult;
     @Mock
     private DeleteResult deleteResult;
+    @Mock
+    private MongoCursor<Ticket> mongoCursor;
     private static final FindOneAndUpdateOptions UPSERT_OPTIONS = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+    @Captor
+    private ArgumentCaptor<FindOneAndUpdateOptions> optionsArgumentCaptor;
     private Bson FILTER;
     private Ticket validTicket;
     private UUID uuid;
@@ -120,14 +124,16 @@ public class TicketServiceTest {
         when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
         Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
         sut.updateTicket(validTicket);
-        verify(tickets, times(1)).findOneAndUpdate(eq(Filters.eq("id", uuid)), any(Document.class),any(FindOneAndUpdateOptions.class));
-       // assertEquals(documentArgumentCaptor.getValue(), mongoDocumentToUpdate); //TODO i do not like this change. This does not capture and verify the actual document. That is not a valid test. But for some reason argumentcapture.capture() is not working.
+        verify(tickets, times(1)).findOneAndUpdate(eq(Filters.eq("id", uuid)), eq(mongoDocumentToUpdate),optionsArgumentCaptor.capture());
+        FindOneAndUpdateOptions actualOptions = optionsArgumentCaptor.getValue();
+        assertTrue( actualOptions.isUpsert());
+        assertEquals(ReturnDocument.AFTER, actualOptions.getReturnDocument());
     }
 
     @Test(expected = IllegalStateException.class)
     public void updateTicketPropagatesExceptionInFindOneAndUpdate() throws JsonProcessingException {
         when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
-        Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
+        //Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
         when(tickets.findOneAndUpdate(eq(Filters.eq("id", uuid)),any(Document.class),any(FindOneAndUpdateOptions.class))) //TODO this needs to chamge. We need to capture the document and verify and also equate the FindOneAndUpdateOptions.
                 .thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
         sut.updateTicket(validTicket);
@@ -181,8 +187,14 @@ public class TicketServiceTest {
         sut.deleteTicket(uuid,uuid);
     }
 
+    @Ignore
     @Test
     public void validNumberNotGivenToLimitThenGivesBack20Results(){
+        when(tickets.find(any(Bson.class))).thenReturn(findIterable);
+        when(mongoCursor.hasNext()).thenReturn(false);
+        sut.fetchAllTickets(TicketType.PROBLEM,22.00,23.00,"created","last_element","SOME_INVALID_VALUES");
 
+        verify(tickets,times(1)).find(documentArgumentCaptor.capture());
+        verify(findIterable,times(1)).limit(eq(20));
     }
 }

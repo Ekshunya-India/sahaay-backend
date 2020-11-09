@@ -32,7 +32,7 @@ public class TicketPostHandler implements LightHttpHandler {
     }
 
     //TODO currently i am not sure if all the code of ticketFacade is in the main thread. It will be better if we move this to the worker thread of undertow by using exchange.someFUnctionTOCallTOWorkerThread(Our code to call the facade and get the results.)
-
+    //TODO We need to think about the userType and the corresponding API privlages they have.l Eg: Partners cannot suddenly start deleting tickets which they have not created. Or Update Ticket Details in such a way to derail the conversation etc.
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes(

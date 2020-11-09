@@ -15,6 +15,8 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -73,22 +75,24 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> fetchAllOpenedTicket(@NonNull final TicketType actualTicketType,
-                                             @NonNull final double latitude,
-                                             @NonNull final double longitude,
-                                             @NonNull final String sortBy,
-                                             @NonNull final String valueOfLastElement,
-                                             @NonNull final String limitValuesTo) {
-        int limit= parseLimit(limitValuesTo);
+    //TODO please add unit test to this. There is no unit test at all.
+    public List<Ticket> fetchAllTickets(@NonNull final TicketType actualTicketType,
+                                        @NonNull final double latitude,
+                                        @NonNull final double longitude,
+                                        @NonNull final String sortBy,
+                                        @NonNull final String valueOfLastElement,
+                                        @NonNull final String limitValuesTo) {
+        int limit = parseLimit(limitValuesTo);
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
             List<Ticket> ticketsToReturn = new ArrayList<>();
             FindIterable<Ticket> ticketFindIterable;
+            Point refPoint = new Point(new Position(longitude, latitude));
             //TODO currently the we assume we need only in Ascending order. This needs to change when the user wants in another order.
+
             ticketFindIterable = tickets.find(and(
-                    eq("lat", latitude),
-                    eq("lng",longitude),
+                    Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
                     eq("ticketType",actualTicketType),
                     gt(sortBy,valueOfLastElement),
                     ascending(sortBy))).limit(limit);
@@ -105,7 +109,7 @@ public class TicketService {
      * @param ticketId ticketId to which the feed needs to be added.
      * @return long value which indicates the number of document updated. This ideally should be one for a Feed Add.
      */
-    public long updateWithFeed(final Feed newFeed, final UUID ticketId) {
+    public long updateWithFeed(@NonNull final Feed newFeed, @NonNull final UUID ticketId) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);

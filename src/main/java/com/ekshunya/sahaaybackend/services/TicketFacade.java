@@ -62,7 +62,7 @@ public class TicketFacade {
             ticketUpdatedFuture = executor.submit(() -> {
                 Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
                 if (ticketToUpdate == null) {
-                    throw new BadDataException("The Incoming Ticket Details were of in-valid format");
+                    throw new BadDataException("The Incoming Ticket Details were of in-valid format");   //TODO this results in 2 exception to be thrown.
                 }
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
                 return this.mainMapper.ticketToTicketDto(updatedTicket);
@@ -107,7 +107,7 @@ public class TicketFacade {
             TicketType actualTicketType = TicketType.valueOf(ticketType);
             double lat = Double.parseDouble(latitude);
             double lng = Double.parseDouble(longitude);
-            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng, sortBy, valueOfLastElement, limitValuesTo));
+            futureTickets = executor.submit(() -> this.ticketService.fetchAllTickets(actualTicketType, lat, lng, sortBy, valueOfLastElement, limitValuesTo));
             List<Ticket> openTickets = futureTickets.get();
             return openTickets.stream().map(this.mainMapper::ticketToTicketDto).collect(Collectors.toList());
         } catch (ExecutionException e) {
