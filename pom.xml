@@ -30,8 +30,8 @@
         <version.maven-source>3.1.0</version.maven-source>
         <org.mapstruct.version>1.4.1.Final</org.mapstruct.version>
         <version.lombok>1.18.16</version.lombok>
-        <version.junit>4.12</version.junit>
-        <powermock.version>2.0.7</powermock.version>
+        <version.junit>5.7.0</version.junit>
+        <version.mockito>3.6.0</version.mockito>
     </properties>
 
     <dependencies>
@@ -254,32 +254,25 @@
         </dependency>
 
         <!-- Test Dependencies -->
-        <!-- TODO : It is sad that we are still using junit4. We need to migrate to jupiter junit soon. -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>${version.junit}</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito2</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-        <!-- https://github.com/mockito/mockito/issues/1606 TODO: byte buddy was added because of a bug in the mockito -->
-        <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <!-- TODO add in the proper system properties and then reference it here. -->
         <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.10.18</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>2.23.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.intuit.karate</groupId>
@@ -290,7 +283,7 @@
         <!-- https://mvnrepository.com/artifact/com.intuit.karate/karate-junit4 -->
         <dependency>
             <groupId>com.intuit.karate</groupId>
-            <artifactId>karate-junit4</artifactId>
+            <artifactId>karate-junit5</artifactId>
             <version>0.9.6</version>
             <scope>test</scope>
         </dependency>
