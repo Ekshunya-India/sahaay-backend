@@ -10,6 +10,7 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import io.undertow.server.handlers.form.FormData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,11 +38,11 @@ public class TicketFacadeTest {
 	private ArgumentCaptor<Feed> feedCaptor;
 	@Mock
 	private MainMapper mainMapper;
+	@Mock
+	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketCreateDto ticketCreateDto;
 	private TicketCreateDto invalidCreateDto;
 	private LocationDto locationDto;
-	@Mock
-	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketDetailsUpdateDto invalidTicketDetails;
 	private Ticket validTicket;
 	private TicketFeedDto validFeedDto;
@@ -53,6 +54,7 @@ public class TicketFacadeTest {
 	private static final String TITLE = "A new problem in the Aread";
 	private static final String USER_ID = UUID.randomUUID().toString();
 
+	@BeforeEach
 	public void setUp() throws Exception {
 		locationDto = new LocationDto(22.00, 23.00);
 		ticketCreateDto = new TicketCreateDto(uuid,locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
@@ -85,9 +87,8 @@ public class TicketFacadeTest {
 	}
 
 	@Test
-	public void createTicketThrowsBadDataExceotion() throws InterruptedException {
+	public void createTicketThrowsBadDataExceotion()  {
 		assertThrows(BadDataException.class,()->sut.createTicket(invalidCreateDto));
-
 	}
 
 	@Test
@@ -103,13 +104,13 @@ public class TicketFacadeTest {
 	}
 
 	@Test
-	public void updateTicketThrowsBadDataExceptionWhenThereIsBadData() throws InterruptedException {
+	public void updateTicketThrowsBadDataExceptionWhenThereIsBadData() {
 		assertThrows(BadDataException.class, ()->sut.updateTicket(invalidTicketDetails));
 	}
 
 	@Test
 	public void updateTicketGivesTheDetailsToServiceToUpdate() throws InterruptedException{
-		when(mainMapper.ticketDetailsUpdateDtoToTicket(any())).thenReturn(validTicket);
+		when(mainMapper.ticketDetailsUpdateDtoToTicket(any(TicketDetailsUpdateDto.class))).thenReturn(validTicket);
 		sut.updateTicket(ticketDetailsUpdateDto);
 
 		verify(this.ticketService,times(1)).updateTicket(ticketArgumentCaptor.capture());
