@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
@@ -28,13 +30,11 @@ import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.all;
 import static com.mongodb.client.model.Filters.and;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
-//TODO this powermock ignore was added to solve this issue https://github.com/powermock/powermock/issues/864
 @ExtendWith(MockitoExtension.class)
 public class TicketServiceTest {
     @Mock
@@ -53,6 +53,10 @@ public class TicketServiceTest {
     private ArgumentCaptor<Ticket> ticketArgumentCaptor;
     @Captor
     private ArgumentCaptor<Document> documentArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<Bson> filtersArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<FindOneAndUpdateOptions> findOneAndUpdateOptionsArgumentCaptor;
     @Mock
     private FindIterable<Ticket> findIterable;
     @Mock
@@ -64,24 +68,25 @@ public class TicketServiceTest {
     private UUID uuid;
     private Location location;
     private Feed newFeed;
+    private FindOneAndUpdateOptions options;
+
     @BeforeEach
-    public void setUp() throws Exception {
-        mockStatic(MongoClients.class);
+    public void setUp() {
         this.uuid = UUID.randomUUID();
-        location = new Location(2L,3L);
-        validTicket = new Ticket(uuid,"SOME_TITLE","SOME_DESC", ZonedDateTime.now(),ZonedDateTime.now(),null,
-                uuid,uuid,location, Priority.P1, TicketType.PROBLEM, State.OPENED,1,0,0,new ArrayList<>(),new ArrayList<>(), Arrays.asList("ROAD_WORK","ROAD REPAIR","ROADS"));
+        location = new Location(2L, 3L);
+        validTicket = new Ticket(uuid, "SOME_TITLE", "SOME_DESC", ZonedDateTime.now(), ZonedDateTime.now(), null,
+                uuid, uuid, location, Priority.P1, TicketType.PROBLEM, State.OPENED, 1, 0, 0, new ArrayList<>(), new ArrayList<>(), Arrays.asList("ROAD_WORK", "ROAD REPAIR", "ROADS"));
         when(mongoClient.getDatabase(eq("sahaay-db"))).thenReturn(db);
         when(db.getCollection(eq("ticket"), eq(Ticket.class))).thenReturn(tickets);
-        when(findIterable.first()).thenReturn(validTicket);
-        newFeed = new Feed(uuid,ZonedDateTime.now(),ZonedDateTime.now(),new ArrayList<>(),uuid);
-        FILTER= Filters.eq("id",this.uuid);
+        newFeed = new Feed(uuid, ZonedDateTime.now(), ZonedDateTime.now(), new ArrayList<>(), uuid);
+        FILTER = Filters.eq("id", this.uuid);
+        options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER).upsert(true);
     }
 
     @Test
     public void aValidCreateTicketGivesBackTrueWhenInserted(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when( ()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(tickets.insertOne(eq(validTicket))).thenReturn(InsertOneResult.acknowledged(null));
 
             sut.createANewTicket(validTicket);
@@ -94,7 +99,7 @@ public class TicketServiceTest {
     @Test
     public void anyExceptionThrownInCreateIsSentBack(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
 
             when(tickets.insertOne(eq(validTicket))).thenThrow(new IllegalStateException("SOME PROBLEM HAPPENED GOLEM"));
             assertThrows(IllegalStateException.class, () -> sut.createANewTicket(validTicket));
@@ -104,7 +109,7 @@ public class TicketServiceTest {
     @Test
     public void updateTicketThrowsBadDataExceptionWhenThereIsAJsonProcessingException() throws JsonProcessingException {
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(objectMapper.writeValueAsString(eq(validTicket))).thenThrow(new JsonGenerationException("SOME MESSAGE"));
         assertThrows(BadDataException.class,()->sut.updateTicket(validTicket));}
     }
@@ -112,22 +117,25 @@ public class TicketServiceTest {
     @Test
     public void upddateTicketSendsDataToMongoDbAndSendsAValidTicketBack() throws JsonProcessingException {
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
             Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
             sut.updateTicket(validTicket);
-            verify(tickets, times(1)).findOneAndUpdate(any(), documentArgumentCaptor.capture());
+            verify(tickets, times(1)).findOneAndUpdate(filtersArgumentCaptor.capture(), documentArgumentCaptor.capture(),findOneAndUpdateOptionsArgumentCaptor.capture());
             assertEquals(documentArgumentCaptor.getValue(), mongoDocumentToUpdate);
+            FindOneAndUpdateOptions actualOptions = findOneAndUpdateOptionsArgumentCaptor.getValue();
+            assertEquals(ReturnDocument.AFTER, actualOptions.getReturnDocument());
+            assertTrue(actualOptions.isUpsert());
         }
     }
 
     @Test
     public void updateTicketPropagatesExceptionInFindOneAndUpdate() throws JsonProcessingException {
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(objectMapper.writeValueAsString(eq(validTicket))).thenReturn(new ObjectMapper().writeValueAsString(validTicket));
             Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(validTicket));
-            when(tickets.findOneAndUpdate(any(), eq(mongoDocumentToUpdate))).thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
+            when(tickets.findOneAndUpdate(any(), eq(mongoDocumentToUpdate), any(FindOneAndUpdateOptions.class))).thenThrow(new IllegalStateException("SOME UNKNOWN EXCEPTION"));
             assertThrows(IllegalStateException.class, () -> sut.updateTicket(validTicket));
         }
     }
@@ -135,8 +143,9 @@ public class TicketServiceTest {
     @Test
     public void validIdSentToTheIdIsGivenToMongoDb(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(tickets.find(eq(FILTER),eq(Ticket.class))).thenReturn(findIterable);
+            when(findIterable.first()).thenReturn(validTicket);
         Ticket actualTicket =  sut.fetchTicket(uuid);
         assertEquals(validTicket,actualTicket);}
     }
@@ -145,7 +154,7 @@ public class TicketServiceTest {
     @Test
     public void AnyExceptionThrownByTheMongoCollectionIsPropagatedBack(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(tickets.find(any(Bson.class), eq(Ticket.class))).thenThrow(new IllegalStateException("SOMETHING BAD HAPPENED ALFRED"));
             assertThrows(IllegalStateException.class, () -> sut.fetchTicket(uuid));
         }
@@ -154,7 +163,7 @@ public class TicketServiceTest {
     @Test
     public void updateWithFeedUpdatesItInMongoDb() throws JsonProcessingException{
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(objectMapper.writeValueAsString(eq(newFeed))).thenReturn(new ObjectMapper().writeValueAsString(newFeed));
             Document feedToAdd = Document.parse(new ObjectMapper().writeValueAsString(newFeed));
             Bson updates = Updates.push("id.feeds.$.", feedToAdd);
@@ -168,7 +177,7 @@ public class TicketServiceTest {
     @Test
     public void updateWithFeedThrowsBadDataExceptionWhenJsonProcessingIsThrown() throws JsonProcessingException {
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             when(objectMapper.writeValueAsString(eq(newFeed))).thenThrow(new JsonMappingException("SOME BAD DATA"));
 
             assertThrows(BadDataException.class, () -> sut.updateWithFeed(newFeed, uuid));
@@ -178,7 +187,7 @@ public class TicketServiceTest {
     @Test
     public void deleteTicketsPassesOnTheIdsToMongoLikeAGoodBoy(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             Bson andDeleteBson = and(Filters.eq("id", uuid), Filters.eq("openedBy", uuid), all("state", State.values()));
             when(tickets.deleteOne(eq(andDeleteBson))).thenReturn(deleteResult);
             when(deleteResult.getDeletedCount()).thenReturn(1L);
@@ -190,15 +199,15 @@ public class TicketServiceTest {
     @Test
     public void deleteTicketPropagatesExceptionThrownByMongoDb(){
         try (MockedStatic mocked = mockStatic(MongoClients.class)) {
-            mocked.when(MongoClients::create).thenReturn(mongoClient);
+            mocked.when(()-> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
             Bson andDeleteBson = and(Filters.eq("id", uuid), Filters.eq("openedBy", uuid), all("state", State.values()));
             when(tickets.deleteOne(eq(andDeleteBson))).thenThrow(new IllegalStateException("SOME THING REALLY BAD"));
             assertThrows(IllegalStateException.class, () -> sut.deleteTicket(uuid, uuid));
         }
     }
 
-    @Test
-    public void validNumberNotGivenToLimitThenGivesBack20Results(){
-
-    }
+//    @Test
+//    public void validNumberNotGivenToLimitThenGivesBack20Results(){
+//
+//    }
 }
