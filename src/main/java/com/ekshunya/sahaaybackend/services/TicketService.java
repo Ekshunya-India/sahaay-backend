@@ -91,11 +91,19 @@ public class TicketService {
             Point refPoint = new Point(new Position(longitude, latitude));
             //TODO currently the we assume we need only in Ascending order. This needs to change when the user wants in another order.
 
-            ticketFindIterable = tickets.find(and(
-                    Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
-                    eq("ticketType",actualTicketType),
-                    gt(sortBy,valueOfLastElement),
-                    ascending(sortBy))).limit(limit);
+            //TODO currently this just gets all the tickets. If there are too many tickets it might be a problem. We need to make sure that we restrict.
+            if("NO_VALUE".equals(valueOfLastElement)){
+                ticketFindIterable = tickets.find(and(
+                        Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
+                        eq("ticketType",actualTicketType),
+                        ascending(sortBy))).limit(limit);
+            } else{
+                ticketFindIterable = tickets.find(and(
+                        Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
+                        eq("ticketType",actualTicketType),
+                        gt(sortBy,valueOfLastElement),
+                        ascending(sortBy))).limit(limit);
+            }
             while (ticketFindIterable.cursor().hasNext()){
                 ticketsToReturn.add(ticketFindIterable.cursor().next());
             }

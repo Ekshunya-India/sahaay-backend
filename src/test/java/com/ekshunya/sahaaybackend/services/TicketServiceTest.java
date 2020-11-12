@@ -214,14 +214,18 @@ public class TicketServiceTest {
         }
     }
 
-    @Disabled
     @Test
-    public void validNumberNotGivenToLimitThenGivesBack20Results(){
-        when(tickets.find(any(Bson.class))).thenReturn(findIterable);
-        when(mongoCursor.hasNext()).thenReturn(false);
-        sut.fetchAllTickets(TicketType.PROBLEM,22.00,23.00,"created","last_element","SOME_INVALID_VALUES");
+    public void validNumberNotGivenToLimitThenGivesBack20Results() {
+        try (MockedStatic mocked = mockStatic(MongoClients.class)) {
+            mocked.when(() -> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
+            when(tickets.find(any(Bson.class))).thenReturn(findIterable);
+            when(findIterable.limit(eq(20))).thenReturn(findIterable);
+            when(findIterable.cursor()).thenReturn(mongoCursor);
+            when(mongoCursor.hasNext()).thenReturn(false);
+            sut.fetchAllTickets(TicketType.PROBLEM, 22.00, 23.00, "created", "last_element", "SOME_INVALID_VALUES");
 
-        verify(tickets,times(1)).find(documentArgumentCaptor.capture());
-        verify(findIterable,times(1)).limit(eq(20));
+            verify(tickets, times(1)).find(documentArgumentCaptor.capture());
+            verify(findIterable, times(1)).limit(eq(20));
+        }
     }
 }
