@@ -228,4 +228,21 @@ public class TicketServiceTest {
             verify(findIterable, times(1)).limit(eq(20));
         }
     }
+
+    @Test
+    public void whenNoLastValueFoundThenItIsNotUsedInTheQuery(){
+        try (MockedStatic mocked = mockStatic(MongoClients.class)) {
+            mocked.when(() -> MongoClients.create(eq(clientSettings))).thenReturn(mongoClient);
+            when(tickets.find(any(Bson.class))).thenReturn(findIterable);
+            when(findIterable.limit(eq(30))).thenReturn(findIterable);
+            when(findIterable.cursor()).thenReturn(mongoCursor);
+            when(mongoCursor.hasNext()).thenReturn(false);
+
+            sut.fetchAllTickets(TicketType.PROBLEM, 22.00, 23.00, "created", "NO_VALUE", "30");
+            verify(tickets, times(1)).find(documentArgumentCaptor.capture());
+            verify(findIterable, times(1)).limit(eq(30));
+            Document filters= documentArgumentCaptor.getValue();
+            assertEquals(3, filters.size());
+        }
+        }
 }
