@@ -59,7 +59,7 @@ public class TicketService {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
             Document mongoDocumentToUpdate = Document.parse(this.objectMapper.writeValueAsString(ticketToUpdate));
-            FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
+            FindOneAndUpdateOptions options = new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER).upsert(true);
             return tickets.findOneAndUpdate(eq("id", ticketToUpdate.getId()), mongoDocumentToUpdate, options);
         } catch (JsonProcessingException e) {
             log.error(ERROR);
