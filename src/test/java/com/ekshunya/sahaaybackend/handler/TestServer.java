@@ -2,15 +2,14 @@
 package com.ekshunya.sahaaybackend.handler;
 
 import com.networknt.server.Server;
-import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.networknt.server.Server;
 import com.networknt.server.ServerConfig;
 
-public class TestServer extends ExternalResource {
+public class TestServer //extends ExternalResource {
+{
     static final Logger logger = LoggerFactory.getLogger(TestServer.class);
 
     private static final AtomicInteger refCount = new AtomicInteger(0);
@@ -31,7 +30,7 @@ public class TestServer extends ExternalResource {
         return Server.config;
     }
 
-    @Override
+    //@Override
     protected void before() {
         try {
             if (refCount.get() == 0) {
@@ -43,7 +42,7 @@ public class TestServer extends ExternalResource {
         }
     }
 
-    @Override
+    //@Override
     protected void after() {
         refCount.getAndDecrement();
         if (refCount.get() == 0) {
