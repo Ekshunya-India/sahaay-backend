@@ -10,6 +10,5 @@ public class Attachement {
 	@NotNull
 	AttachementType attachementType;
 	String url;
-	Feed feed;
 	UUID id; //Generated.
 }
