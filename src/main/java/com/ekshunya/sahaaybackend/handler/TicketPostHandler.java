@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
 For more information on how to write business handlers, please check the link below.
@@ -31,21 +32,17 @@ public class TicketPostHandler implements LightHttpHandler {
     }
 
     //TODO currently i am not sure if all the code of ticketFacade is in the main thread. It will be better if we move this to the worker thread of undertow by using exchange.someFUnctionTOCallTOWorkerThread(Our code to call the facade and get the results.)
-
+    //TODO We need to think about the userType and the corresponding API privlages they have.l Eg: Partners cannot suddenly start deleting tickets which they have not created. Or Update Ticket Details in such a way to derail the conversation etc.
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         exchange.getRequestReceiver().receiveFullBytes(
                 (httpServerExchange, bytes) -> {
                     try {
                         TicketCreateDto ticketCreateDto = this.objectMapper.readValue(bytes, TicketCreateDto.class);
-                        if (this.ticketFacade.createTicket(ticketCreateDto)){
-                            String requestUrl = exchange.getRequestURI();
-                            httpServerExchange.getResponseHeaders().add(HttpString.tryFromString("Location"),requestUrl+ticketCreateDto.getId().toString());
+                        UUID idOfTheSavedResource =this.ticketFacade.createTicket(ticketCreateDto);
+                            String requestUrl = exchange.getHostAndPort();
+                            httpServerExchange.getResponseHeaders().add(HttpString.tryFromString("Location"),requestUrl+"/ticket/"+idOfTheSavedResource);
                             httpServerExchange.setStatusCode(201);
-                        }else{
-                            log.error("There was a problem while creating the new Ticket");
-                            httpServerExchange.setStatusCode(500);
-                        }
                     } catch (IOException e) {
                         log.error(Arrays.toString(e.getStackTrace()));
                         httpServerExchange.setStatusCode(400);

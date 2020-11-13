@@ -42,7 +42,10 @@ public class TicketGetHandler implements LightHttpHandler {
             String ticketType  = queryParameters.get("ticketType").getFirst();
             String latitude = queryParameters.get("latitude").getFirst();
             String longitude = queryParameters.get("longitude").getFirst();
-            List<TicketDto> ticketDtos = this.ticketFacade.fetchAllTicketOfType(ticketType,latitude,longitude);
+            String sortBy = HandlerHelper.fetchSortByFrom(exchange);
+            String lastValueOfLastSearch = HandlerHelper.fetchLastDisplayElement(exchange);
+            String limitValuesTo = HandlerHelper.fetchLimitFrom(exchange);
+            List<TicketDto> ticketDtos = this.ticketFacade.fetchAllTicket(ticketType,latitude,longitude,sortBy,lastValueOfLastSearch,limitValuesTo);
             exchange.getResponseSender().send(this.objectMapper.writeValueAsString(ticketDtos));
             exchange.setStatusCode(200);
         } catch (IOException e) {

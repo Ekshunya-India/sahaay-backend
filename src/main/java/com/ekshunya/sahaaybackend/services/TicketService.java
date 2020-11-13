@@ -15,9 +15,10 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.geojson.Point;
+import com.mongodb.client.model.geojson.Position;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.NotImplementedException;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -42,12 +43,14 @@ public class TicketService {
 
 
     //TODO add UUID to the ticket here. Lets not wait for the Id of the Resource from the DB.
-        public boolean createANewTicket(@NonNull final Ticket ticketToSave) {
+        public UUID createANewTicket(@NonNull final Ticket ticketToSave) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
-            ticketToSave.setId(UUID.randomUUID());
-            return tickets.insertOne(ticketToSave).wasAcknowledged();
+            UUID idOfTheSavedTicket = UUID.randomUUID();
+            ticketToSave.setId(idOfTheSavedTicket);
+            tickets.insertOne(ticketToSave);
+            return idOfTheSavedTicket;
         }
     }
 
@@ -64,7 +67,7 @@ public class TicketService {
         }
     }
 
-    public Ticket fetchTicket(final UUID ticketId) throws DataNotFoundException {
+    public Ticket fetchTicket(@NonNull final UUID ticketId) throws DataNotFoundException {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
@@ -72,12 +75,40 @@ public class TicketService {
         }
     }
 
-    public List<Ticket> fetchAllOpenedTicket(final TicketType actualTicketType, final double latitude, final double longitude) {
-        //TODO put inside a Java Fiber. If 16 SDK does not work out then we can put this inside a Kotlin Global Async
-        //TODO do a pagination using bucket pattern in mongo DB.
-        // https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-1
-        // https://www.mongodb.com/blog/post/paging-with-the-bucket-pattern--part-2
-        throw new NotImplementedException("Yet to Implement");
+    //TODO please add unit test to this. There is no unit test at all.
+    public List<Ticket> fetchAllTickets(@NonNull final TicketType actualTicketType,
+                                        @NonNull final double latitude,
+                                        @NonNull final double longitude,
+                                        @NonNull final String sortBy,
+                                        @NonNull final String valueOfLastElement,
+                                        @NonNull final String limitValuesTo) {
+        int limit = parseLimit(limitValuesTo);
+        try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
+            MongoDatabase db = mongoClient.getDatabase("sahaay-db");
+            MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
+            List<Ticket> ticketsToReturn = new ArrayList<>();
+            FindIterable<Ticket> ticketFindIterable;
+            Point refPoint = new Point(new Position(longitude, latitude));
+            //TODO currently the we assume we need only in Ascending order. This needs to change when the user wants in another order.
+
+            //TODO currently this just gets all the tickets. If there are too many tickets it might be a problem. We need to make sure that we restrict.
+            if("NO_VALUE".equals(valueOfLastElement)){
+                ticketFindIterable = tickets.find(and(
+                        Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
+                        eq("ticketType",actualTicketType),
+                        ascending(sortBy))).limit(limit);
+            } else{
+                ticketFindIterable = tickets.find(and(
+                        Filters.near("location",refPoint,100.00,0.0),   //TODO currently the max distance and the minimum distance is hard coded which is wrong.
+                        eq("ticketType",actualTicketType),
+                        gt(sortBy,valueOfLastElement),
+                        ascending(sortBy))).limit(limit);
+            }
+            while (ticketFindIterable.cursor().hasNext()){
+                ticketsToReturn.add(ticketFindIterable.cursor().next());
+            }
+            return ticketsToReturn;
+        }
     }
 
     /**
@@ -86,7 +117,7 @@ public class TicketService {
      * @param ticketId ticketId to which the feed needs to be added.
      * @return long value which indicates the number of document updated. This ideally should be one for a Feed Add.
      */
-    public long updateWithFeed(final Feed newFeed, final UUID ticketId) {
+    public long updateWithFeed(@NonNull final Feed newFeed, @NonNull final UUID ticketId) {
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
@@ -117,12 +148,7 @@ public class TicketService {
                                                            @NonNull final String sortBy,
                                                            @NonNull final String greaterThanValue,
                                                            @NonNull final String limitValuesTo) {
-        int limit;
-        try{
-            limit = Integer.parseInt(limitValuesTo);
-        } catch (NumberFormatException numberFormatException){
-            limit=20;
-        }
+        int limit= parseLimit(limitValuesTo);
         try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class); //
@@ -134,6 +160,15 @@ public class TicketService {
                 ticketsToReturn.add(ticketFindIterable.cursor().next());
             }
             return ticketsToReturn;
+        }
+    }
+
+
+    private int parseLimit(@NonNull final String limit){
+        try{
+            return Integer.parseInt(limit);
+        } catch (NumberFormatException numberFormatException){
+           return 20;
         }
     }
 }

@@ -38,6 +38,9 @@ public class TicketFacadeTest {
 	private ArgumentCaptor<Feed> feedCaptor;
 	@Mock
 	private MainMapper mainMapper;
+	private String sortBy;
+	private String valueOfLastElement;
+	private String limitValuesTo;
 	@Mock
 	private TicketDetailsUpdateDto ticketDetailsUpdateDto;
 	private TicketCreateDto ticketCreateDto;
@@ -56,6 +59,9 @@ public class TicketFacadeTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
+		sortBy="created";
+		limitValuesTo="20";
+		valueOfLastElement = "SOME_VALUE";
 		locationDto = new LocationDto(22.00, 23.00);
 		ticketCreateDto = new TicketCreateDto(uuid,locationDto, ZonedDateTime.now().plusDays(10).toString(), 1,
 				DESC, "PROBLEM", TITLE, "P1", USER_ID);
@@ -138,27 +144,29 @@ public class TicketFacadeTest {
 
 	@Test
 	public void whenInValidDataGivenToFetchThrowsBadDataException() throws InterruptedException {
-		assertThrows(BadDataException.class,()->sut.fetchAllTicketOfType("SOME_TICKETTYPE","20.00","30.00"));
+		assertThrows(BadDataException.class,()->sut.fetchAllTicket("SOME_TICKETTYPE",String.valueOf(LAT),String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo));
 	}
 
 	@Test
 	public void whenInValidDataGivenToFetchThrowsBadDataExceptionWhenParsingWrongDouble() throws InterruptedException {
-		assertThrows(BadDataException.class,()->sut.fetchAllTicketOfType("PROBLEM","SOME_BAD_DATA","30.00"));
+		assertThrows(BadDataException.class,()->sut.fetchAllTicket("PROBLEM","SOME_BAD_DATA",String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo));
 	}
 
 	@Test
 	public void whenDataNotFoundExceptionIsThrownInExcecutorThenItIsPropagated() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
-		assertThrows(DataNotFoundException.class,()->sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG)));
+		when(ticketService.fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo)))
+				.thenThrow(new DataNotFoundException("SOME WEIRED EXCEPTION THROWN HERE"));
+
+		assertThrows(DataNotFoundException.class,()->sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo));
 	}
 
 	@Test
 	public void validDataGivenToFetchAllTicketsValidDataIsPassedOnToService() throws InterruptedException {
-		when(ticketService.fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG))).thenReturn(new ArrayList<>());
+		when(ticketService.fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo))).thenReturn(new ArrayList<>());
 
-		sut.fetchAllTicketOfType(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG));
+		sut.fetchAllTicket(TicketType.PROBLEM.name(),String.valueOf(LAT), String.valueOf(LNG),sortBy,valueOfLastElement,limitValuesTo);
 
-		verify(ticketService,times(1)).fetchAllOpenedTicket(eq(TicketType.PROBLEM),eq(LAT),eq(LNG));
+		verify(ticketService,times(1)).fetchAllTickets(eq(TicketType.PROBLEM),eq(LAT),eq(LNG),eq(sortBy),eq(valueOfLastElement),eq(limitValuesTo));
 	}
 	//TODO there is a need to add in validations to check if the Mapper is working for Ticket related Mappers atleast.
 

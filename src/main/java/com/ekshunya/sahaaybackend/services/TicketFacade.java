@@ -37,10 +37,10 @@ public class TicketFacade {
         this.mainMapper=mainMapper;
     }
 
-    public boolean createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
+    public UUID createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
         //First time using the Java Fibers. Hopefully its correct.
         ThreadFactory factory = Thread.builder().virtual().factory();
-        Future<Boolean> ticketCreatedAck;
+        Future<UUID> ticketCreatedAck;
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             ticketCreatedAck = executor.submit(() -> {
                 Ticket ticketToSave = this.mainMapper.ticketCreateDtoToTicket(ticketCreateDto);
@@ -64,7 +64,7 @@ public class TicketFacade {
                 log.info(this.mainMapper.toString());
                 Ticket ticketToUpdate = this.mainMapper.ticketDetailsUpdateDtoToTicket(ticketDetailsUpdateDto);
                 if (ticketToUpdate == null) {
-                    throw new BadDataException("ERROR : The Incoming Ticket Details were of in-valid format");
+                    throw new BadDataException("ERROR : The Incoming Ticket Details were of in-valid format");   //TODO this results in 2 exception to be thrown.
                 }
                 Ticket updatedTicket = this.ticketService.updateTicket(ticketToUpdate);
                 return this.mainMapper.ticketToTicketDto(updatedTicket);
@@ -96,15 +96,20 @@ public class TicketFacade {
             throw new BadDataException("ERROR : There was an error while converting the data from Database"); //TODO this is wrong. This needs to change.
         }
     }
-
-    public List<TicketDto> fetchAllTicketOfType(@NonNull final String ticketType, @NonNull final String latitude, @NonNull final String longitude) throws InterruptedException {
+//TODO we need to also add the logic of valueOfLastElement being "NO_VALUE". in the service that is.
+    public List<TicketDto> fetchAllTicket(@NonNull final String ticketType,
+                                          @NonNull final String latitude,
+                                          @NonNull final String longitude,
+                                          @NonNull final String sortBy,
+                                          @NonNull final String valueOfLastElement,
+                                          @NonNull final String limitValuesTo) throws InterruptedException {
         Future<List<Ticket>> futureTickets;
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             TicketType actualTicketType = TicketType.valueOf(ticketType);
             double lat = Double.parseDouble(latitude);
             double lng = Double.parseDouble(longitude);
-            futureTickets = executor.submit(() -> this.ticketService.fetchAllOpenedTicket(actualTicketType, lat, lng));
+            futureTickets = executor.submit(() -> this.ticketService.fetchAllTickets(actualTicketType, lat, lng, sortBy, valueOfLastElement, limitValuesTo));
             List<Ticket> openTickets = futureTickets.get();
             return openTickets.stream().map(this.mainMapper::ticketToTicketDto).collect(Collectors.toList());
         } catch (ExecutionException e) {
