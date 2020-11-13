@@ -11,7 +11,7 @@ public class HandlerHelper {
     public static String fetchSortByFrom(@NonNull final HttpServerExchange exchange){
         Deque<String> sortBy = exchange.getQueryParameters().get("sortby");
         if(CollectionUtils.isEmpty(sortBy)){
-            throw new BadDataException("Sort By is needed as a parameter for fetching all tickets");
+            throw new BadDataException("Sort By is needed as a parameter for fetching all tickets");  //TODO instead of throwing an exception does actually making the sort default to created time a more better approach? But that would mean that we assume that crewated date sort is the default.
         }
         return sortBy.getFirst();
     }
