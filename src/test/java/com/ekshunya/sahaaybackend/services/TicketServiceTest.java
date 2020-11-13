@@ -245,7 +245,8 @@ public class TicketServiceTest {
             verify(findIterable, times(1)).limit(eq(30));
             Bson filters = documentArgumentCaptor.getValue();
             assertTrue("And Filter{filters=[Geometry Operator Filter{fieldName='location', operator='$near', geometry=Point{coordinate=Position{values=[23.0, 22.0]}}, maxDistance=100.0, minDistance=0.0}, Filter{fieldName='ticketType', value=PROBLEM}, {\"created\": 1}]}\n"
-                    .contains(filters.toString()));
+                    .contains(filters.toString()));  //TODO i do not like this unit test as this is not correctly checking the required fileters.
+            //TODO this is not testing the ascending order filter as well. This needs to change.
         }
     }
 
