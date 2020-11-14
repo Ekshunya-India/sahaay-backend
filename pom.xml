@@ -267,11 +267,19 @@
             <artifactId>google-oauth-client-jetty</artifactId>
             <version>1.23.0</version>
         </dependency>
+        <!-- For calling the Http Rest API's of DailyMotion Video Platform -->
         <!-- https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java -->
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
+        </dependency>
+        <!-- For calling the Python SDK from sound cloud -->
+        <!-- https://mvnrepository.com/artifact/org.python/jython-slim -->
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython-slim</artifactId>
+            <version>2.7.2</version>
         </dependency>
 
 
