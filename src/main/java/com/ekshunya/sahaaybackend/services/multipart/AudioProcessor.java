@@ -1,4 +1,4 @@
-package com.ekshunya.sahaaybackend.services;
+package com.ekshunya.sahaaybackend.services.multipart;
 
 //TODO Integrate with Soundcloud, MixCloud, iBroadcast. Mixcloud and iBroadcast is fully free. which is very nice.
 // https://www.mixcloud.com/developers/
