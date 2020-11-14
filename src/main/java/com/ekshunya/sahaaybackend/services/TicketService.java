@@ -75,7 +75,16 @@ public class TicketService {
         }
     }
 
-    //TODO please add unit test to this. There is no unit test at all.
+    /**
+     * The method to get All Tickets around a location. This method useuses pagination and sorting for displaying the results.
+     * @param actualTicketType The Type of ticket, Problem, Help or Story
+     * @param latitude  of the Reference location.
+     * @param longitude of the reference loction
+     * @param sortBy field which will be used to sort the result.
+     * @param valueOfLastElement will be used to get the remaining elements that are present after this element.
+     * @param limitValuesTo the limit of values. If no value is given it defaults to 20.
+     * @return The list of all tickets that are present around the reference location.
+     */
     public List<Ticket> fetchAllTickets(@NonNull final TicketType actualTicketType,
                                         @NonNull final double latitude,
                                         @NonNull final double longitude,
