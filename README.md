@@ -45,7 +45,7 @@ This will be a light4j-rest application. This will be fully Asynchornus with the
 
 ### Running this Project.
 ##### PreReq:
-1. Java 16 JDK. Download from [Java JDK Download](https://jdk.java.net/16/)
+1. This Project Runs on the still incubated, Project Loom. [Java JDK Download](http://jdk.java.net/loom/)
 1. Maven Install. [Maven Download Page](http://maven.apache.org/download.cgi#)
 1. Intellij IDE 2020 EAP Install. [Intellij EAP Download](https://www.jetbrains.com/idea/nextversion/#section=mac)
 1. MongoDB Install. [MongoDB Community Server](https://www.mongodb.com/try/download/community)

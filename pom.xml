@@ -268,13 +268,12 @@
             <version>1.23.0</version>
         </dependency>
         <!-- For calling the Python SDK from sound cloud -->
-        <!-- https://mvnrepository.com/artifact/org.python/jython-slim -->
+        <!-- TODO : Please remove this if we are not using sound cloud. https://mvnrepository.com/artifact/org.python/jython-slim -->
         <dependency>
             <groupId>org.python</groupId>
             <artifactId>jython-slim</artifactId>
             <version>2.7.2</version>
         </dependency>
-
 
         <!-- Test Dependencies -->
         <dependency>

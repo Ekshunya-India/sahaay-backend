@@ -86,8 +86,8 @@ public class TicketService {
      * @return The list of all tickets that are present around the reference location.
      */
     public List<Ticket> fetchAllTickets(@NonNull final TicketType actualTicketType,
-                                        @NonNull final double latitude,
-                                        @NonNull final double longitude,
+                                        final double latitude,
+                                        final double longitude,
                                         @NonNull final String sortBy,
                                         @NonNull final String valueOfLastElement,
                                         @NonNull final String limitValuesTo) {
