@@ -6,9 +6,9 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Value
-public class Attachement {
+public class Attachment {
 	@NotNull
-	AttachementType attachementType;
+	AttachmentType attachmentType;
 	String url;
 	UUID id; //Generated.
 }

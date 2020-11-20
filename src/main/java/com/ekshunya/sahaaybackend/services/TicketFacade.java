@@ -4,6 +4,7 @@ import com.ekshunya.sahaaybackend.exceptions.BadDataException;
 import com.ekshunya.sahaaybackend.exceptions.DataNotFoundException;
 import com.ekshunya.sahaaybackend.exceptions.InternalServerException;
 import com.ekshunya.sahaaybackend.mapper.MainMapper;
+import com.ekshunya.sahaaybackend.model.daos.Attachment;
 import com.ekshunya.sahaaybackend.model.daos.Feed;
 import com.ekshunya.sahaaybackend.model.daos.Ticket;
 import com.ekshunya.sahaaybackend.model.daos.TicketType;
@@ -11,6 +12,7 @@ import com.ekshunya.sahaaybackend.model.dtos.TicketCreateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDetailsUpdateDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketDto;
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
+import com.ekshunya.sahaaybackend.services.multipart.AttachmentProcessor;
 import com.google.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +32,13 @@ public class TicketFacade {
     private final TicketService ticketService;
     private final MainMapper mainMapper;
     private final static String ERROR_MESSAGE = "ERROR : There was an Error while processing the request";
+    private final AttachmentProcessor attachmentProcessor;
 
     @Inject
-    public TicketFacade(final TicketService ticketService, final MainMapper mainMapper) {
+    public TicketFacade(final TicketService ticketService, final MainMapper mainMapper, final AttachmentProcessor attachmentProcessor) {
         this.ticketService = ticketService;
         this.mainMapper=mainMapper;
+        this.attachmentProcessor = attachmentProcessor;
     }
 
     public UUID createTicket(@NonNull final TicketCreateDto ticketCreateDto) throws InterruptedException {
@@ -129,11 +133,8 @@ public class TicketFacade {
         ThreadFactory factory = Thread.builder().virtual().factory();
         try (var executor = Executors.newThreadExecutor(factory).withDeadline(Instant.now().plusSeconds(2))) {
             Feed newFeed =  this.mainMapper.ticketFeedToTicket(ticketFeedDto);
-            //TODO add the attachment Processor Here to add process the multi part file.
-            if(newFeed==null){
-                log.error(ERROR_MESSAGE);
-                throw new BadDataException("There was a problem while converting the Data");
-            }
+            List<Attachment> attachments = attachmentProcessor.processAttachment(ticketFeedDto.getFormData(), ticketFeedDto.getId().toString());
+            newFeed.setAttachments(attachments);
             Future<Long> ticketFuture = executor.submit(() ->
                     this.ticketService.updateWithFeed(newFeed,ticketFeedDto.getId()));
             return ticketFuture.get().equals(1L);
