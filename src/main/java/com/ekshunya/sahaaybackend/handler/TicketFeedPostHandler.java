@@ -2,9 +2,7 @@ package com.ekshunya.sahaaybackend.handler;
 
 import com.ekshunya.sahaaybackend.model.dtos.TicketFeedDto;
 import com.ekshunya.sahaaybackend.services.TicketFacade;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import com.networknt.handler.Handler;
 import com.networknt.handler.LightHttpHandler;
 import com.networknt.httpstring.AttachmentConstants;
 import com.networknt.utility.Constants;

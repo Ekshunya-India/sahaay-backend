@@ -1,5 +1,8 @@
 package com.ekshunya.sahaaybackend.model.daos;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.bson.codecs.pojo.annotations.BsonId;
 
@@ -9,15 +12,17 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Feed {
 	@BsonId
-	UUID id;
+	private UUID id;
 	@NotNull(message = "There should always be a created date time associated with the update")
 	@PastOrPresent
-	ZonedDateTime created;
-	ZonedDateTime lastUpdated;
+	private ZonedDateTime created;
+	private ZonedDateTime lastUpdated;
 	@NotNull()
-	List<Attachement> attachments;
-	UUID userId; //Optional
+	private List<Attachment> attachments;
+	private UUID userId; //Optional
 }

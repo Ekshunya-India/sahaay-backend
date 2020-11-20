@@ -252,36 +252,6 @@
             <artifactId>jmapper-core</artifactId>
             <version>1.6.1.CR2</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-            <version>1.23.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.apis</groupId>
-            <artifactId>google-api-services-youtube</artifactId>
-            <version>v3-rev222-1.25.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.oauth-client</groupId>
-            <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.23.0</version>
-        </dependency>
-        <!-- For calling the Http Rest API's of DailyMotion Video Platform -->
-        <!-- https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java -->
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.9</version>
-        </dependency>
-        <!-- For calling the Python SDK from sound cloud -->
-        <!-- https://mvnrepository.com/artifact/org.python/jython-slim -->
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-slim</artifactId>
-            <version>2.7.2</version>
-        </dependency>
-
 
         <!-- Test Dependencies -->
         <dependency>
