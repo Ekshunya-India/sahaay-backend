@@ -131,7 +131,6 @@ public class TicketService {
             MongoDatabase db = mongoClient.getDatabase("sahaay-db");
             MongoCollection<Ticket> tickets = db.getCollection("ticket", Ticket.class);
             Document feedToAdd = Document.parse(this.objectMapper.writeValueAsString(newFeed));
-
             return tickets.updateOne(Filters.eq("id",ticketId), Updates.push("id.feeds.$.",feedToAdd)).getMatchedCount();  //TODO the fieldName in Updates.push needs to be looked at properly.
         } catch (JsonProcessingException e) {
             log.error(ERROR);
