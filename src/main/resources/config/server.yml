@@ -46,7 +46,7 @@ serviceId: ${server.serviceId:com.ekshunya.sahaay-backend-3.0.1}
 
 # Flag to enable self service registration. This should be turned on on official test and production. And
 # dyanmicPort should be enabled if any orchestration tool is used like Kubernetes.
-enableRegistry: ${server.enableRegistry:false}
+enableRegistry: ${server.enableRegistry:false}   #TODO how to utilize this in a lightweight way.
 
 # Dynamic port is used in situation that multiple services will be deployed on the same host and normally
 # you will have enableRegistry set to true so that other services can find the dynamic port service. When
