@@ -34,18 +34,18 @@ Currently the roadmap looks like the following:
 * Problems are listed anonymous. No data linking a user to the problem is stored at back-end. Just in the android local. The android app can have secret URL of some sorts which can be used to edit the problem. Only the User will have that URL on the android device. 
 * Action items on the tickets. Any user/groups of user can pick up the problem/request/help and work on it. After the work the users is required to provide evidence of the solution/help given to close the ticket.
 
-This will be a light4j-rest application. This will be fully Asynchornus with the use of Java Fibers. More at https://www.youtube.com/watch?v=fOEPEXTpbJA , http://jdk.java.net/loom/ and https://user-images.githubusercontent.com/5641222/97071026-c7060580-15fa-11eb-8046-d11feedb2039.png , https://user-images.githubusercontent.com/5641222/97071028-c9685f80-15fa-11eb-8a8e-15995a32ecd6.png. 
+This will be a light4j-rest application. This will be fully Asynchornus with the use of Java Fibers. More at https://www.youtube.com/watch?v=fOEPEXTpbJA , http://jdk.java.net/loom/ and https://user-images.githubusercontent.com/5641222/97071026-c7060580-15fa-11eb-8046-d11feedb2039.png , https://user-images.githubusercontent.com/5641222/97071028-c9685f80-15fa-11eb-8a8e-15995a32ecd6.png.
+Every micro service will connect with each other with Zeromq library.
 
 * This project follows the specification [Collective Code Construction Contract](https://rfc.zeromq.org/spec/42/)
 * The corresponding android repository is present [Android App](https://github.com/sunil-kavali/sahaay-android)
 * The corresponding play repository is present [IOS App](https://github.com/Ekshunya-India/sahaay-ios)
-* The corresponding oAuth2 Server is present at [oAuth-Server](https://github.com/Ekshunya-India/sahaay-security)
 * The corresponding cucumber tests is present at [BDD Tests](https://github.com/Ekshunya-India/sahaay-bdd)
 * The corresponding sahaay coins is present at[Sahaay Coins](https://github.com/Ekshunya-India/sahaay-coins)
 
 ### Running this Project.
 ##### PreReq:
-1. Java 16 JDK. Download from [Java JDK Download](https://jdk.java.net/16/)
+1. Java Loom JDK. Download from [Java JDK Download](http://jdk.java.net/loom/)
 1. Maven Install. [Maven Download Page](http://maven.apache.org/download.cgi#)
 1. Intellij IDE 2020 EAP Install. [Intellij EAP Download](https://www.jetbrains.com/idea/nextversion/#section=mac)
 1. MongoDB Install. [MongoDB Community Server](https://www.mongodb.com/try/download/community)
@@ -66,3 +66,4 @@ Shout out :
 1. https://oauth.net/2/
 1. https://www.mongodb.com/
 1. https://www.networknt.com/
+1. https://www.keycloak.org/

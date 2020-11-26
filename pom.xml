@@ -32,6 +32,8 @@
         <version.lombok>1.18.16</version.lombok>
         <version.junit>5.7.0</version.junit>
         <version.mockito>3.6.0</version.mockito>
+        <version.zeromq>0.5.2</version.zeromq>
+        <version.keycloak>11.0.3</version.keycloak>
     </properties>
 
     <dependencies>
@@ -291,6 +293,20 @@
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
             <version>1.10.18</version>
+        </dependency>
+        <!-- https://zeromq.org/get-started/?language=java&library=jeromq# -->
+        <!-- https://mvnrepository.com/artifact/org.zeromq/jeromq -->
+        <dependency>
+            <groupId>org.zeromq</groupId>
+            <artifactId>jeromq</artifactId>
+            <version>${version.zeromq}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.keycloak/keycloak-undertow-adapter -->
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-undertow-adapter</artifactId>
+            <version>${version.keycloak}</version>
         </dependency>
     </dependencies>
 
