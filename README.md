@@ -49,6 +49,8 @@ Every micro service will connect with each other with Zeromq library.
 1. Maven Install. [Maven Download Page](http://maven.apache.org/download.cgi#)
 1. Intellij IDE 2020 EAP Install. [Intellij EAP Download](https://www.jetbrains.com/idea/nextversion/#section=mac)
 1. MongoDB Install. [MongoDB Community Server](https://www.mongodb.com/try/download/community)
+1. Install Keycloak locally. [keycloack download](https://www.keycloak.org/getting-started/getting-started-zip)
+1. Get a self signed ceritificate for keyclock,sahaay-backend. [SSL for Keyclock](https://docs.axway.com/bundle/Activator_61_AdministratorsGuide_allOS_en_HTML5/page/Content/User_admin/SSO/sso_keycloak_openid_conf.htm)
 
 ##### Maven Run:
 exec-maven-plugin gives the ability to execute the project. In the IDE maven Window go to Plugins
